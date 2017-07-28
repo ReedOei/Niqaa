@@ -2,13 +2,14 @@
 
 module Lib
     ( 
-      findShipAt, getCurrentShip,
+      findShipAt, getCurrentShip, checkDestroyedShips,
       createShot,
       handlePhysics,
       Ship (..),
       Shot (..), shot_size, shot_speed,
       Model (..),
       Action (..),
+      Part (..), addPart, basePart
     ) where
 
 import Linear.V2 (V2(V2))
@@ -18,10 +19,20 @@ import qualified Data.Map as Map
 
 import System.IO.Unsafe
 
+average :: Floating a => [a] -> a
+average xs = sum xs / (fromIntegral $ length xs)
+
 shot_size :: Double
 shot_size = 5
 shot_speed = 1
 shot_damage = 3
+
+basePart :: Part
+basePart = Part (-1) (-1) "hull" (V2 0 0) (V2 0 0) 10 20
+
+addPart :: Ship -> Part -> V2 Double -> Ship
+addPart ship@(Ship {..}) part@(Part {..}) pos = ship {shipParts = Map.insert (nParts + 1) (part {parentShipId = shipId, partId = nParts + 1, partPos = pos}) shipParts, 
+                                                 nParts = nParts + 1}
 
 data Action = LClick (V2 Double) | RClick (V2 Double) | None | Step Double
     deriving Show
@@ -32,12 +43,25 @@ data Model = Model { currentShip :: Int, -- The id of the current ship
                      nShots :: Int}
     deriving Show
 
+data Faction = Faction { factionId :: Int,
+                         factioNName :: String}
+    deriving Show
+
+data Part = Part { partId :: Int,
+                   parentShipId :: Int,
+                   partType :: String,
+                   partPos :: V2 Double,
+                   partVel :: V2 Double,
+                   health :: Int,
+                   partSize :: Double}
+    deriving Show
+
 data Ship = Ship { shipId :: Int,
                    shipName :: String,
-                   shipSize :: Double,
+                   shipFaction :: Int,
                    shipPos :: V2 Double,
-                   shipVel :: V2 Double,
-                   health :: Int}
+                   shipParts :: Map.Map Int Part,
+                   nParts :: Int}
     deriving (Show)
 
 data Shot = Shot { shotId :: Int,
@@ -78,24 +102,47 @@ instance Physics Shot where
         model {shots = Map.insert shotId (doMove shot) shots}
 
     handleCollisions model@(Model {..}) shot@(Shot {..}) = 
-        case checkCollisions shot ships of
+        case concat $ Map.elems $ Map.map (checkCollisions shot . shipParts) ships of
             [] -> model
-            collisions -> case find (\ship -> getId ship /= launchId) collisions of
-                        Just ship -> let newShip = damage shot_damage ship in unsafePerformIO $ do
-                            print newShip
-                            return $ case health newShip > 0 of
-                                -- If it's still alive, just update it
-                                True -> model {shots = Map.delete shotId shots, ships = Map.insert (getId ship) newShip ships}
+            collisions -> case find (\part -> parentShipId part /= launchId) collisions of
+                        Just part -> let newPart = damage shot_damage part in
+                            case health newPart > 0 of
+                                -- If it's still alive, just update it, which means we need to find the ship it comes from
+                                True -> case Map.lookup (parentShipId newPart) ships of
+                                            Just ship@(Ship{..}) -> 
+                                                model {shots = Map.delete shotId shots,
+                                                       ships = Map.insert shipId (ship {shipParts = Map.insert (getId newPart) newPart shipParts}) ships}
+                                            Nothing -> error "Couldn't find parent ship of part."
 
                                 -- Otherwise, get rid of it, because it's dead
-                                False -> model {shots = Map.delete shotId shots, ships = Map.delete (getId ship) ships}
+                                False -> case Map.lookup (parentShipId newPart) ships of
+                                            Just ship@(Ship {..}) ->
+                                                model {shots = Map.delete shotId shots,
+                                                       ships = Map.insert shipId (ship {shipParts = Map.delete (getId newPart) shipParts}) ships}
+                                            Nothing -> error "Couldn't find parent ship of part."
                         Nothing -> model
+
+instance Physics Part where
+    getId = partId
+    getBounds (Part {partPos = V2 x y, partSize=partSize}) = Rect x y partSize partSize
+
+    doMove part@(Part {..}) = part {partPos = partPos + partVel}
+    handleMove model@(Model {..}) part@(Part {..}) = model -- Parts aren't part of the model. Their movement is handled when the ship moves.
+
+    handleCollisions model@(Model {..}) self = model
 
 instance Physics Ship where
     getId = shipId
-    getBounds (Ship {shipPos = V2 x y, shipSize=shipSize}) = Rect x y shipSize shipSize
-
-    doMove ship@(Ship {..}) = ship {shipPos = shipPos + shipVel}
+    getBounds (Ship {shipPos = V2 x y}) = Rect x y 20 20
+    
+    -- Moving all the ship's parts is what counts as moving.
+    doMove ship@(Ship {..}) = 
+        ship {shipParts = Map.map doMove shipParts, 
+              -- We don't want to get the average of our ship parts if there aren't any because then we'll divide by 0.
+              -- The ship will be removed next step, so we just need to leave it as is.
+              shipPos = case Map.elems shipParts of
+                            [] -> shipPos
+                            parts -> average $ map partPos parts}
     handleMove model@(Model {..}) ship@(Ship {..}) = 
         model {ships = Map.insert shipId (doMove ship) ships}
 
@@ -128,14 +175,15 @@ findShipAt pos ships = getId <$> (find ((pos `inRect`) . getBounds) $ map snd $ 
 getCurrentShip :: Model -> Maybe Ship
 getCurrentShip (Model {..}) = Map.lookup currentShip ships
 
-damage :: Int -> Ship -> Ship
-damage amount ship@(Ship {..}) = ship {health = health - amount}
+damage :: Int -> Part -> Part
+damage amount part@(Part {..}) = part {health = health - amount}
 
 -- Shoots a shot from the specified ship at the specified position.
 createShot :: Model -> Ship -> V2 Double -> Model
 createShot model@(Model {..}) ship@(Ship {..}) pos = model {shots=newShots, nShots = nShots + 1}
-    where newShots = Map.insert nShots (Shot nShots shipPos vel shipId) shots
-            where vel = normalize (pos - shipPos) * shot_speed
+    where nextGun = head $ Map.elems shipParts -- TODO: Make it so that not every piece shoots.
+          newShots = Map.insert nShots (Shot nShots (partPos nextGun) vel shipId) shots
+            where vel = normalize (pos - partPos nextGun) * shot_speed
 
 handleShots :: Model -> Model
 handleShots initModel = foldl handleShot initModel $ shots initModel
@@ -148,4 +196,7 @@ handlePhysics :: Model -> Model
 handlePhysics model = afterShips
     where afterShots = Map.foldl doPhysics model $ shots model
           afterShips = Map.foldl doPhysics afterShots $ ships afterShots
+
+checkDestroyedShips :: Model -> Model
+checkDestroyedShips model@(Model {..}) = model {ships = Map.filter (not . Map.null . shipParts) ships}
 

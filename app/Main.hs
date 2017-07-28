@@ -1,4 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE NamedFieldPuns #-}
 
 module Main where
 
@@ -24,8 +25,8 @@ import Lib
 
 initial :: (Model, Cmd SDLEngine Action)
 initial = (Model 1 initShips Map.empty (Map.size initShips + 1) 1, Cmd.none)
-    where initShips = Map.fromList [(1, Ship 1 "Kiraara" 40 (V2 500 500) (V2 0 0) 10),
-                                    (2, Ship 2 "Vijossk" 30 (V2 600 100) (V2 0 0) 10)]
+    where initShips = Map.fromList [(1, addPart (Ship 1 "Kiraara" 1 (V2 500 500) Map.empty 0) basePart (V2 500 500)),
+                                    (2, addPart (Ship 2 "Vijossk" 2 (V2 600 100) Map.empty 0) basePart (V2 600 100))]
 
 update :: Model -> Action -> (Model, Cmd SDLEngine Action)
 -- Change the current ship when we right click
@@ -40,7 +41,7 @@ update model@(Model {..}) (LClick pos) =
         Just ship -> (createShot model ship pos, Cmd.none)
         Nothing -> (model, Cmd.none)
 
-update model (Step dt) = (handlePhysics model, Cmd.none)
+update model (Step dt) = (checkDestroyedShips $ handlePhysics model, Cmd.none)
 update model None = (model, Cmd.none)
 
 subscriptions :: Sub SDLEngine Action
@@ -52,11 +53,11 @@ subscriptions = Sub.batch [Mouse.clicks handleClick,
 
 view :: Model -> Graphics SDLEngine
 view (Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) ++ map showShot (Map.elems shots))
-    where showShip (Ship {..}) = group [move shipPos $ filled (rgb 1 0 0) $ square shipSize,
-                                        -- The (-10) adjustment is because the text is 12 pixels tall, so we add 7 to get it out of the ship
-                                        -- and another few so it's not directly on it.
-                                        move (V2 x (y - shipSize / 2 - 10)) $ text $ Text.height 12 $ Text.color (rgb 1 0 0) $ Text.toText shipName]
-            where (V2 x y) = shipPos
+    where showShip (Ship {shipPos = shipPos@(V2 x y), shipName}) = 
+                group [move shipPos $ filled (rgb 1 0 0) $ square 20,
+                -- The (-10) adjustment is because the text is 12 pixels tall, so we add 7 to get it out of the ship
+                -- and another few so it's not directly on it.
+                move (V2 x (y - 20 / 2 - 10)) $ text $ Text.height 12 $ Text.color (rgb 1 0 0) $ Text.toText shipName]
           showShot (Shot {..}) = move shotPos $ filled (rgb 0 0 1) $ square shot_size
 
 main :: IO ()
