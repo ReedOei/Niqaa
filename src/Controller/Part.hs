@@ -24,10 +24,10 @@ import Controller.Main
 import System.IO.Unsafe
 
 base :: Part.Part
-base = Part.Part (-1) (-1) "hull" (V2 0 0) (V2 0 0) 10 20 0 0
+base = Part.Part (-1) (-1) "hull" (V2 0 0) (V2 0 0) 100 20 0 0
 
 gun :: Part.Part
-gun = Part.Part (-1) (-1) "gun" (V2 0 0) (V2 0 0) 5 10 2000 0
+gun = Part.Part (-1) (-1) "gun" (V2 0 0) (V2 0 0) 50 10 2000 0
 
 add :: V2 Double -> Part.Part -> Ship.Ship -> Ship.Ship
 add placePos part ship@(Ship.Ship {..}) = ship {Ship.parts = Map.insert (nParts + 1) (part {Part.shipId = id, Part.id = nParts + 1, Part.pos = placePos}) parts, 

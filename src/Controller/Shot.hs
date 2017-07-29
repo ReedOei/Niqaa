@@ -13,9 +13,9 @@ import qualified Data.Map as Map
 import Linear.V2 (V2(V2))
 
 import Model.Main
-import qualified Model.Ship as Ship
 import qualified Model.Shot as Shot
 import qualified Model.Part as Part
+import qualified Model.Ship as Ship
 
 import Controller.Main
 import qualified Controller.Part as Part
@@ -63,7 +63,7 @@ create :: Model -> Ship.Ship -> V2 Double -> Model
 create model@(Model {..}) ship@(Ship.Ship {..}) targetPos = afterShot
     where gunPart = find (\part -> Part.partType part == "gun" && Part.timer part > Part.timeGoal part) $ Map.elems parts
           newShots nextGun = 
-            Map.insert nShots (Shot.Shot nShots (Part.pos nextGun) vel shot_size $ Ship.id ship) shots
+            Map.insert nShots (Shot.Shot nShots (Part.pos nextGun) vel shot_size (Ship.factionId ship) $ Ship.id ship) shots
             where vel = normalize (targetPos - Part.pos nextGun) * shot_speed
           afterShot = 
             case gunPart of 

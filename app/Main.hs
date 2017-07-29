@@ -33,10 +33,14 @@ import qualified Controller.Part as Part
 import qualified Controller.Ship as Ship
 import qualified Controller.Shot as Shot
 
+gameFPS = 60
+
 initial :: (Model, Cmd SDLEngine Action)
 initial = (Model 1 initShips Map.empty (Map.size initShips + 1) 1, Cmd.none)
     where initShips = Map.fromList [(1, Part.place R Part.gun $ Part.place L Part.gun $ Part.place U Part.base $ Ship.Ship 1 "Kiraara" 1 (V2 500 500) Map.empty 0),
-                                    (2, Part.place U Part.base $ Part.place U Part.base $ Part.place U Part.base $ Ship.Ship 2 "Vijossk" 2 (V2 600 100) Map.empty 0)]
+                                    (2, Part.place L Part.gun $ Part.place U Part.base $ Part.place U Part.base $ Part.place U Part.base $ Ship.Ship 2 "Vijossk" 2 (V2 600 100) Map.empty 0),
+                                    (3, Part.place U Part.gun $ Part.place R Part.base $ Part.place R Part.base $ Ship.Ship 3 "Videre" 3 (V2 1000 600) Map.empty 0),
+                                    (4, Part.place U Part.gun $ Part.place D Part.gun $ Part.place L Part.gun $ Ship.Ship 4 "Hija" 4 (V2 100 500) Map.empty 0)]
 
 update :: Model -> Action -> (Model, Cmd SDLEngine Action)
 -- Change the current ship when we right click
@@ -56,7 +60,7 @@ update model None = (model, Cmd.none)
 
 subscriptions :: Sub SDLEngine Action
 subscriptions = Sub.batch [Mouse.clicks handleClick,
-                           Time.fps 60 Step]
+                           Time.fps gameFPS Step]
     where handleClick Mouse.LeftButton (V2 x y) = LClick (V2 (fromIntegral x) (fromIntegral y))
           handleClick Mouse.RightButton (V2 x y) = RClick (V2 (fromIntegral x) (fromIntegral y))
           handleClick _ _ = None
@@ -74,7 +78,9 @@ view (Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) ++ map 
 
 main :: IO ()
 main = do
-    engine <- SDL.startup
+    engine <- SDL.startupWith $ SDL.defaultConfig
+                { SDL.windowIsResizable = False,
+                  SDL.windowDimensions = V2 1280 720 }
 
     run engine GameConfig
      {

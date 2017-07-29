@@ -19,6 +19,7 @@ import qualified Model.Part as Part
 
 import Controller.Main
 import qualified Controller.Part as Part
+import qualified Controller.Shot as Shot
 
 instance Physics Ship.Ship where
     getId = Ship.id
@@ -37,7 +38,14 @@ instance Physics Ship.Ship where
 
     handleCollisions model@(Model {..}) self = model
 
-    handleStep dt model@Model{..} self@Ship.Ship{..} = afterParts
+    handleStep dt model self@Ship.Ship{..} = 
+        case find (\check -> Ship.factionId check /= factionId) $ ships afterParts of
+            Just target -> 
+                -- Relookup ourselves to make sure we have the latest version.
+                case Map.lookup (Ship.id self) $ ships afterParts of
+                    Just ship -> Shot.create afterParts ship $ Part.pos $ head $ Map.elems $ Ship.parts target
+                    Nothing -> afterParts
+            Nothing -> afterParts
         where afterParts = Map.foldl (handleStep dt) model parts
     
 getCurrent :: Model -> Maybe Ship.Ship
