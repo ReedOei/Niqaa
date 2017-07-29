@@ -11,5 +11,7 @@ data Part = Part { id :: Int,
                    pos :: V2 Double,
                    vel :: V2 Double,
                    health :: Int,
-                   size :: Double}
+                   size :: Double,
+                   timeGoal :: Double,
+                   timer :: Double }
     deriving Show

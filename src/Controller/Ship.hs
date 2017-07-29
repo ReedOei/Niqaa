@@ -37,7 +37,8 @@ instance Physics Ship.Ship where
 
     handleCollisions model@(Model {..}) self = model
 
-    handleStep model self dt = model
+    handleStep dt model@Model{..} self@Ship.Ship{..} = afterParts
+        where afterParts = Map.foldl (handleStep dt) model parts
     
 getCurrent :: Model -> Maybe Ship.Ship
 getCurrent (Model {..}) = Map.lookup currentShip ships

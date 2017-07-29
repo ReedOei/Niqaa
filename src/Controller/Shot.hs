@@ -18,7 +18,9 @@ import qualified Model.Shot as Shot
 import qualified Model.Part as Part
 
 import Controller.Main
-import Controller.Part
+import qualified Controller.Part as Part
+
+import System.IO.Unsafe
 
 shot_size :: Double
 shot_size = 5
@@ -37,7 +39,7 @@ instance Physics Shot.Shot where
         case concat $ Map.elems $ Map.map (checkCollisions shot . Ship.parts) ships of
             [] -> model
             collisions -> case find (\part -> Part.shipId part /= launchId) collisions of
-                        Just part -> let newPart = damage shot_damage part in
+                        Just part -> let newPart = Part.damage shot_damage part in
                             case Part.health newPart > 0 of
                                 -- If it's still alive, just update it, which means we need to find the ship it comes from
                                 True -> case Map.lookup (Part.shipId newPart) ships of
@@ -54,11 +56,21 @@ instance Physics Shot.Shot where
                                             Nothing -> error "Couldn't find parent ship of part."
                         Nothing -> model
 
-    handleStep model self dt = model
+    handleStep dt model self = model
 
 -- Shoots a shot from the specified ship at the specified position.
 create :: Model -> Ship.Ship -> V2 Double -> Model
-create model@(Model {..}) ship@(Ship.Ship {..}) targetPos = model {shots=newShots, nShots = nShots + 1}
-    where nextGun = head $ Map.elems parts -- TODO: Make it so that not every piece shoots.
-          newShots = Map.insert nShots (Shot.Shot nShots (Part.pos nextGun) vel shot_size $ Ship.id ship) shots
+create model@(Model {..}) ship@(Ship.Ship {..}) targetPos = afterShot
+    where gunPart = find (\part -> Part.partType part == "gun" && Part.timer part > Part.timeGoal part) $ Map.elems parts
+          newShots nextGun = 
+            Map.insert nShots (Shot.Shot nShots (Part.pos nextGun) vel shot_size $ Ship.id ship) shots
             where vel = normalize (targetPos - Part.pos nextGun) * shot_speed
+          afterShot = 
+            case gunPart of 
+                Just nextGun@Part.Part{..} -> 
+                    case Map.lookup shipId ships of
+                        Just ship@Ship.Ship{Ship.parts} -> model {shots = newShots nextGun, nShots = nShots + 1,
+                                                                  ships = Map.insert shipId (ship {Ship.parts = updatePhysics parts $ nextGun {Part.timer = 0}}) ships}
+                        Nothing -> error "Couldn't find parent ship of part."
+                Nothing -> model
+

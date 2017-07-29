@@ -2,7 +2,8 @@ module Controller.Main
     (
         Physics (..),
         v2Len, normalize, average,
-        inRect
+        inRect,
+        updatePhysics
     ) where
 
 import qualified Data.Map as Map
@@ -45,7 +46,7 @@ class Physics o where
 
     handleCollisions :: Model -> o -> Model
 
-    handleStep :: Model -> o -> Double -> Model
+    handleStep :: Double -> Model -> o -> Model
 
     checkCollisions :: Physics a => o -> Map.Map k a -> [a]
     checkCollisions self m = filter (collided self) $ Map.elems m
@@ -56,4 +57,6 @@ class Physics o where
     doPhysics :: Model -> o -> Model
     doPhysics model self = handleCollisions (handleMove model self) (doMove self)
 
+updatePhysics :: Physics a => Map.Map Int a -> a -> Map.Map Int a
+updatePhysics m self = Map.insert (getId self) self m
 

@@ -35,7 +35,7 @@ import qualified Controller.Shot as Shot
 
 initial :: (Model, Cmd SDLEngine Action)
 initial = (Model 1 initShips Map.empty (Map.size initShips + 1) 1, Cmd.none)
-    where initShips = Map.fromList [(1, Part.place U Part.base $ Ship.Ship 1 "Kiraara" 1 (V2 500 500) Map.empty 0),
+    where initShips = Map.fromList [(1, Part.place R Part.gun $ Part.place L Part.gun $ Part.place U Part.base $ Ship.Ship 1 "Kiraara" 1 (V2 500 500) Map.empty 0),
                                     (2, Part.place U Part.base $ Part.place U Part.base $ Part.place U Part.base $ Ship.Ship 2 "Vijossk" 2 (V2 600 100) Map.empty 0)]
 
 update :: Model -> Action -> (Model, Cmd SDLEngine Action)
@@ -51,7 +51,7 @@ update model@(Model {..}) (LClick pos) =
         Just ship -> (Shot.create model ship pos, Cmd.none)
         Nothing -> (model, Cmd.none)
 
-update model (Step dt) = (Ship.checkDestroyed $ handlePhysics model, Cmd.none)
+update model (Step dt) = (doStep dt $ Ship.checkDestroyed $ handlePhysics model, Cmd.none)
 update model None = (model, Cmd.none)
 
 subscriptions :: Sub SDLEngine Action
