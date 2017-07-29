@@ -1,4 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE NamedFieldPuns #-}
 
 module Lib
     ( 
@@ -9,13 +10,16 @@ module Lib
       Shot (..), shot_size, shot_speed,
       Model (..),
       Action (..),
-      Part (..), addPart, basePart
+      Part (..), addPart, basePart, placePart,
+      Direction (..)
     ) where
 
-import Linear.V2 (V2(V2))
+import Linear.V2 (V2(V2), ey, ex)
 
 import Data.List (find)
+import qualified Data.List.Safe as Safe
 import qualified Data.Map as Map
+import Data.Ord (comparing)
 
 import System.IO.Unsafe
 
@@ -27,12 +31,39 @@ shot_size = 5
 shot_speed = 1
 shot_damage = 3
 
+data Direction = U | D | L | R
+
 basePart :: Part
 basePart = Part (-1) (-1) "hull" (V2 0 0) (V2 0 0) 10 20
 
-addPart :: Ship -> Part -> V2 Double -> Ship
-addPart ship@(Ship {..}) part@(Part {..}) pos = ship {shipParts = Map.insert (nParts + 1) (part {parentShipId = shipId, partId = nParts + 1, partPos = pos}) shipParts, 
+addPart :: V2 Double -> Part -> Ship -> Ship
+addPart pos part@(Part {..}) ship@(Ship {..}) = ship {shipParts = Map.insert (nParts + 1) (part {parentShipId = shipId, partId = nParts + 1, partPos = pos}) shipParts, 
                                                  nParts = nParts + 1}
+
+placePart :: Direction -> Part -> Ship -> Ship
+placePart U part ship@(Ship {..}) = 
+    case Safe.minimumBy (comparing (\Part {partPos = V2 x y} -> y)) $ Map.elems shipParts of
+        Just neighbor@(Part {partPos}) -> 
+            addPart (partPos + V2 0 (-partSize part / 2 - partSize neighbor / 2)) part ship
+        Nothing -> addPart shipPos part ship
+
+placePart D part ship@(Ship {..}) = 
+    case Safe.maximumBy (comparing (\Part {partPos = V2 x y} -> y)) $ Map.elems shipParts of
+        Just neighbor@(Part {partPos}) ->
+            addPart (partPos + V2 0 (partSize part / 2 + partSize neighbor / 2)) part ship
+        Nothing -> addPart shipPos part ship
+
+placePart R part ship@(Ship {..}) = 
+    case Safe.maximumBy (comparing (\Part {partPos = V2 x y} -> x)) $ Map.elems shipParts of
+        Just neighbor@(Part {partPos}) ->
+            addPart (partPos + V2 (partSize part / 2 + partSize neighbor / 2) 0) part ship
+        Nothing -> addPart shipPos part ship
+
+placePart L part ship@(Ship {..}) = 
+    case Safe.minimumBy (comparing (\Part {partPos = V2 x y} -> x)) $ Map.elems shipParts of
+        Just neighbor@(Part {partPos}) ->
+            addPart (partPos + V2 (-partSize part / 2 - partSize neighbor / 2) 0) part ship
+        Nothing -> addPart shipPos part ship
 
 data Action = LClick (V2 Double) | RClick (V2 Double) | None | Step Double
     deriving Show

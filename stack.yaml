@@ -4,4 +4,5 @@ packages:
 - '.'
 extra-deps:
 - helm-1.0.0
+- listsafe-0.1.0.1
 resolver: lts-8.23
