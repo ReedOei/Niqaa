@@ -40,6 +40,7 @@ makeGun health size stats = Part.Part
         Part.pos = V2 0 0,
         Part.vel = V2 0 0,
         Part.health = health,
+        Part.color = (1,1,1),
         Part.size = size,
         Part.factionId = -1,
         Part.stats = stats
@@ -58,7 +59,7 @@ getAdjacentParts model part = checkCollisions part $ getPartsById model $ Part.s
 
 -- Should never be used on a non-gun, so let's make it fail if it is
 resetGun part@Part.Part{Part.stats = stats@Part.Gun{..}}
-    | shotsLeft == 0 = part {Part.stats = stats {Part.timer = 0}}
+    | shotsLeft == 0 = part {Part.stats = stats {Part.timer = 0, Part.salvoTimer = 0}}
     | otherwise = part {Part.stats = stats {Part.shotsLeft = shotsLeft - 1}}
 
 type BuildItem = ((Direction, String), (Part.Part, String))
@@ -67,15 +68,15 @@ type BuildPattern = (Ship.Ship, [BuildItem])
 buildShip :: Model -> BuildPattern -> Model
 buildShip inModel@Model{nShips, ships} (inShip, buildParts) = foldl addParts model buildParts
     where model = inModel {ships = Map.insert (Ship.id ship) ship ships, nShips = nShips + 1}
-          ship@Ship.Ship{Ship.pos, Ship.factionId}  = inShip {Ship.id = nShips} 
+          ship@Ship.Ship{Ship.pos, Ship.factionId, Ship.color}  = inShip {Ship.id = nShips} 
           addParts model ((d, lookupName), (part, newName)) =
             case find (\Part.Part{Part.name} -> name == lookupName) $ getPartsById model nShips of
                 Just neighbor -> place d (part {Part.name = newName}) model neighbor
-                Nothing -> place U (part {Part.name = newName}) model (part {Part.pos = pos, Part.shipId = nShips, Part.factionId = factionId})  -- Place it direction, this is the first piece
+                Nothing -> place U (part {Part.name = newName}) model (part {Part.pos = pos, Part.shipId = nShips, Part.factionId = factionId, Part.color = color})  -- Place it direction, this is the first piece
 
 add :: V2 Double -> Part.Part -> Part.Part -> Model -> Model
 add placePos part neighbor model@Model{..} = 
-    model {parts = Map.insert (nParts + 1) (part {Part.shipId = Part.shipId neighbor, Part.id = nParts + 1, Part.pos = placePos, Part.factionId = Part.factionId neighbor}) parts, 
+    model {parts = Map.insert (nParts + 1) (part {Part.shipId = Part.shipId neighbor, Part.id = nParts + 1, Part.pos = placePos, Part.factionId = Part.factionId neighbor, Part.color = Part.color neighbor}) parts, 
            nParts = nParts + 1}
 
 getPartsById :: Model -> Int -> Map.Map Int Part.Part
@@ -115,27 +116,27 @@ instance Physics Part.Part where
               target = enemies !! n
               targetParts = Map.elems $ getParts inModel target
               targetPart = targetParts !! pid
-              (n, newGen1) = randomR (0, length enemies - 1) $ gen inModel
-              (pid, newGen2) = randomR (0, length targetParts - 1) newGen1
-              (rtime, newGen) = randomR (0, 1) newGen2
+              (rtime, newGen1) = randomR (0, 1) $ gen inModel
+              (n, newGen2) = randomR (0, length enemies - 1) newGen1
+              (pid, newGen) = randomR (0, length targetParts - 1) newGen2
               multiplier = 1000 / fromIntegral gameFPS
-              model = inModel {parts = updatePhysics inParts newSelf, gen = newGen}
+              model = inModel {parts = updatePhysics inParts newSelf, gen = if null enemies then newGen1 else newGen}
               newSelf = 
                 case stats of
                     Part.Hull -> self
                     gun@Part.Gun{..} -> 
-                        if timer + dt > timerGoal && timer < timerGoal then self {Part.stats = gun {Part.timer = timer + dt, Part.shotsLeft = salvoSize} }
+                        if timer + dt > timerGoal && timer < timerGoal then self {Part.stats = gun {Part.timer = timer + dt, Part.shotsLeft = salvoSize, Part.salvoTimer = 0} }
                         else self {Part.stats = gun {Part.timer = timer + dt + rtime * multiplier, Part.salvoTimer = salvoTimer + dt + rtime * multiplier}}
 
 -- Shoots a shot from the specified ship at the specified position.
 shoot :: Model -> Part.Part -> V2 Double -> Model
-shoot model@(Model {..}) self@Part.Part{stats=Part.Gun{..}} targetPos
+shoot model@(Model {..}) self@Part.Part{Part.stats=Part.Gun{..}, Part.color} targetPos
     | canShoot self = model {shots = Map.insert nShots newShot shots, nShots = nShots + 1,
                              parts = updatePhysics parts $ resetGun self,
                              gen = newGen}
     | otherwise = model
     where (miss, newGen) = randomR (-1, 1) gen 
-          newShot = Shot.Shot nShots (Part.pos self) vel shotSize shotDamage (Part.factionId self) (Part.shipId self) 
+          newShot = Shot.Shot nShots (Part.pos self) vel shotSize shotDamage color (Part.factionId self) (Part.shipId self) 
             where vel = (fromAngle $ angle perfect + miss * prec) * pure shotSpeed
                     where perfect = normalize (targetPos - Part.pos self)
 shoot model _ _ = model -- If not a gun, we obviously can't shoot anything.

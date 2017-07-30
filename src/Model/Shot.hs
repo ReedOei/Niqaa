@@ -10,6 +10,7 @@ data Shot = Shot { id :: Int,
                    vel :: V2 Double,
                    size :: Double,
                    shotDamage :: Double,
+                   shotColor :: (Double, Double, Double),
                    factionId :: Int,
                    launchId :: Int}
     deriving (Show)

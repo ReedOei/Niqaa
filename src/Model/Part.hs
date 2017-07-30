@@ -12,6 +12,7 @@ data Part = Part { id :: Int,
                    pos :: V2 Double,
                    vel :: V2 Double,
                    health :: Double,
+                   color :: (Double, Double, Double),
                    size :: Double,
                    factionId :: Int,
                    stats :: Stats}

@@ -80,17 +80,16 @@ subscriptions = Sub.batch [Mouse.clicks handleClick,
 view :: Model -> Graphics SDLEngine
 view model@(Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) ++ map showShot (Map.elems shots))
     where showShip ship@Ship.Ship{Ship.color=color@(r,g,b)} = 
-                group $ (map (showPart color) $ Map.elems $ Part.getParts model ship) ++ [name]
+                group $ (map showPart $ Map.elems $ Part.getParts model ship) ++ [name]
                 -- we want it to be just slightly above the highest piece.
                 where name = case Part.getFarthest U model ship of
                                 Just part@Part.Part{Part.pos = V2 x y} -> 
                                     move (V2 x (y - 20 / 2 - 10)) $ text $ Text.height 12 $ Text.color (rgb r g b) $ Text.toText $ Ship.name ship
                                 Nothing -> text $ Text.toText ""
-          showPart (r,g,b) (Part.Part {..}) = move pos $ filled (rgb r g b) $ square size
-          showShot (Shot.Shot {..}) = 
-            case Map.lookup launchId ships of
-                Just Ship.Ship{Ship.color=(r,g,b)} -> move pos $ filled (rgb r g b) $ square size
-                Nothing -> blank
+          showPart (Part.Part {..}) = move pos $ filled (rgb r g b) $ square size
+            where (r,g,b) = color
+          showShot (Shot.Shot {..}) = move pos $ filled (rgb r g b) $ square size
+            where (r,g,b) = shotColor
 
 main :: IO ()
 main = do
