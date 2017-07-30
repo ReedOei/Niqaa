@@ -37,11 +37,9 @@ import qualified Controller.Shot as Shot
 
 import Ships -- Contains ships definitions
 
-gameFPS = 60
-
 initial :: (Model, Cmd SDLEngine Action)
 initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) InitRandom) -- Command is to set up the initial random generator.
-    where shipList = [kiraara, vijossk, videre, hija, davanja]
+    where shipList = [kiraara, vijossk, videre, hija, davanja, pischki]
           model = foldl Part.buildShip initModel shipList
           initModel = 
              Model 

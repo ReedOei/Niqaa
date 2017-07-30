@@ -4,7 +4,8 @@ module Model.Main
         Model (..),
         Faction (..),
         Rect (..),
-        Direction (..)
+        Direction (..),
+        gameFPS
     ) where
 
 import qualified Data.Map as Map
@@ -18,6 +19,7 @@ import qualified Model.Shot as Shot
 import qualified Model.Ship as Ship
 
 data Direction = U | D | L | R
+    deriving (Eq, Show)
 
 data Action = LClick (V2 Double) | 
               RClick (V2 Double) | 
@@ -42,3 +44,7 @@ data Faction = Faction { factionId :: Int,
     deriving Show
 
 data Rect = Rect Double Double Double Double
+
+gameFPS :: Int
+gameFPS = 60
+

@@ -7,6 +7,7 @@ module Model.Part
 import Linear.V2 (V2(V2))
 
 data Part = Part { id :: Int,
+                   name :: String,
                    shipId :: Int,
                    pos :: V2 Double,
                    vel :: V2 Double,
@@ -17,5 +18,16 @@ data Part = Part { id :: Int,
     deriving Show
 
 data Stats = Hull | 
-             Gun Double Double Double Double Double Double -- Precision, timer goal, timer, shot size, shot damage, shot speed
+             Gun {
+                prec :: Double,
+                timerGoal :: Double,
+                timer :: Double,
+                shotSize :: Double,
+                shotDamage :: Double,
+                shotSpeed :: Double,
+                salvoSize :: Int,
+                shotsLeft :: Int,
+                salvoTimerGoal :: Double,
+                salvoTimer :: Double
+             }
     deriving Show

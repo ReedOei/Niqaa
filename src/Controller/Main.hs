@@ -3,7 +3,8 @@ module Controller.Main
         Physics (..),
         v2Len, normalize, average,
         inRect,
-        updatePhysics
+        updatePhysics,
+        getDirection, opposite
     ) where
 
 import qualified Data.Map as Map
@@ -31,10 +32,24 @@ inRect (V2 x1 y1) (Rect x2 y2 w h) = x1 `inRange` (x2 - w, x2 + w) && y1 `inRang
 
 collide :: Rect -> Rect -> Bool
 collide (Rect x1 y1 w1 h1) (Rect x2 y2 w2 h2) = 
-    x1 - w1 / 2 < x2 + w2 / 2 &&
-    x1 + w1 / 2 > x2 - w2 / 2 &&
-    y1 - h1 / 2 < y2 + h2 / 2 &&
-    y1 + h1 / 2 > y2 - h2 / 2
+    x1 - w1 / 2 <= x2 + w2 / 2 &&
+    x1 + w1 / 2 >= x2 - w2 / 2 &&
+    y1 - h1 / 2 <= y2 + h2 / 2 &&
+    y1 + h1 / 2 >= y2 - h2 / 2
+
+opposite U = D
+opposite D = U
+opposite L = R
+opposite R = L
+
+-- Checks which direction the second point is relative to the first
+getDirection :: Ord a => V2 a -> V2 a -> Maybe Direction
+getDirection (V2 x1 y1) (V2 x2 y2)
+    | x1 < x2 = Just R
+    | x1 > x2 = Just L
+    | y1 < y2 = Just D
+    | y1 > y2 = Just U
+    | otherwise = Nothing
 
 class Physics o where
     getId :: o -> Int

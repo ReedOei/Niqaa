@@ -4,9 +4,9 @@
 module Controller.Part
     (
         Direction (..),
-        base, gun, makeGun,
+        makeGun,
         add, place,
-        canShoot, resetTimer,
+        canShoot, resetGun,
         getFarthest,
         getParts, getPartsById,
         buildShip
@@ -31,31 +31,51 @@ import Misc
 import System.Random
 import System.IO.Unsafe
 
-base :: Part.Part
-base = Part.Part (-1) (-1) (V2 0 0) (V2 0 0) 50 20 (-1) Part.Hull
-
-gun :: Part.Part
-gun = makeGun 5 5 $ Part.Gun 5 2000 0 3 5 1
-
 makeGun :: Double -> Double -> Part.Stats -> Part.Part
-makeGun health size stats = Part.Part (-1) (-1) (V2 0 0) (V2 0 0) health size (-1) stats
+makeGun health size stats = Part.Part
+    {
+        Part.id = -1,
+        Part.name = "",
+        Part.shipId = -1,
+        Part.pos = V2 0 0,
+        Part.vel = V2 0 0,
+        Part.health = health,
+        Part.size = size,
+        Part.factionId = -1,
+        Part.stats = stats
+    }
 
-canShoot part@Part.Part{stats = Part.Gun _ goal timer _ _ _} = timer > goal
+canShoot part@Part.Part{stats = Part.Gun{..}} = timer >= timerGoal && salvoTimer >= salvoTimerGoal
 canShoot _ = False
 
--- Should never be used on a non-gun, so let's make it fail if it is
-resetTimer part@Part.Part{stats = Part.Gun prec goal _ size damage speed} = part {Part.stats = Part.Gun prec goal 0 size damage speed}
+isHull part@Part.Part{stats = Part.Hull} = True
+isHull _ = False
 
-type BuildPattern = (Ship.Ship, [(Direction, Part.Part)])
+isGun part@Part.Part{stats = Part.Gun{..}} = True
+isGun _ = False
+
+getAdjacentParts model part = checkCollisions part $ getPartsById model $ Part.shipId part 
+
+-- Should never be used on a non-gun, so let's make it fail if it is
+resetGun part@Part.Part{Part.stats = stats@Part.Gun{..}}
+    | shotsLeft == 0 = part {Part.stats = stats {Part.timer = 0}}
+    | otherwise = part {Part.stats = stats {Part.shotsLeft = shotsLeft - 1}}
+
+type BuildItem = ((Direction, String), (Part.Part, String))
+type BuildPattern = (Ship.Ship, [BuildItem])
 
 buildShip :: Model -> BuildPattern -> Model
-buildShip inModel@Model{nShips, ships} (inShip, parts) = foldl (\m (d, p) -> place d p m ship) model parts
+buildShip inModel@Model{nShips, ships} (inShip, buildParts) = foldl addParts model buildParts
     where model = inModel {ships = Map.insert (Ship.id ship) ship ships, nShips = nShips + 1}
-          ship = inShip {Ship.id = nShips} 
+          ship@Ship.Ship{Ship.pos, Ship.factionId}  = inShip {Ship.id = nShips} 
+          addParts model ((d, lookupName), (part, newName)) =
+            case find (\Part.Part{Part.name} -> name == lookupName) $ getPartsById model nShips of
+                Just neighbor -> place d (part {Part.name = newName}) model neighbor
+                Nothing -> place U (part {Part.name = newName}) model (part {Part.pos = pos, Part.shipId = nShips, Part.factionId = factionId})  -- Place it direction, this is the first piece
 
-add :: V2 Double -> Part.Part -> Ship.Ship -> Model -> Model
-add placePos part ship model@Model{..} = 
-    model {parts = Map.insert (nParts + 1) (part {Part.shipId = Ship.id ship, Part.id = nParts + 1, Part.pos = placePos, Part.factionId = Ship.factionId ship}) parts, 
+add :: V2 Double -> Part.Part -> Part.Part -> Model -> Model
+add placePos part neighbor model@Model{..} = 
+    model {parts = Map.insert (nParts + 1) (part {Part.shipId = Part.shipId neighbor, Part.id = nParts + 1, Part.pos = placePos, Part.factionId = Part.factionId neighbor}) parts, 
            nParts = nParts + 1}
 
 getPartsById :: Model -> Int -> Map.Map Int Part.Part
@@ -70,30 +90,11 @@ getFarthest D model ship = Safe.maximumBy (comparing (\p -> getY (Part.pos p) + 
 getFarthest L model ship = Safe.minimumBy (comparing (\p -> getX (Part.pos p) - Part.size p / 2)) $ Map.elems $ getParts model ship
 getFarthest R model ship = Safe.maximumBy (comparing (\p -> getX (Part.pos p) + Part.size p / 2)) $ Map.elems $ getParts model ship
 
-place :: Direction -> Part.Part -> Model -> Ship.Ship -> Model
-place U part model ship = 
-    case getFarthest U model ship of
-        Just neighbor@(Part.Part {Part.pos}) -> 
-            add (pos + V2 0 (-Part.size part / 2 - Part.size neighbor / 2)) part ship model
-        Nothing -> add (Ship.pos ship) part ship model
-
-place D part model ship = 
-    case getFarthest D model ship of
-        Just neighbor@(Part.Part {Part.pos}) ->
-            add (pos + V2 0 (Part.size part / 2 + Part.size neighbor / 2)) part ship model
-        Nothing -> add (Ship.pos ship) part ship model
-
-place R part model ship  = 
-    case getFarthest R model ship of
-        Just neighbor@(Part.Part {Part.pos}) ->
-            add (pos + V2 (Part.size part / 2 + Part.size neighbor / 2) 0) part ship model
-        Nothing -> add (Ship.pos ship) part ship model
-
-place L part model ship  = 
-    case getFarthest L model ship of
-        Just neighbor@(Part.Part {Part.pos}) ->
-            add (pos + V2 (-Part.size part / 2 - Part.size neighbor / 2) 0) part ship model
-        Nothing -> add (Ship.pos ship) part ship model
+place :: Direction -> Part.Part -> Model -> Part.Part -> Model
+place U part model neighbor@Part.Part{Part.pos} = add (pos + V2 0 (-Part.size part / 2 - Part.size neighbor / 2)) part neighbor model
+place D part model neighbor@Part.Part{Part.pos}  = add (pos + V2 0 (Part.size part / 2 + Part.size neighbor / 2)) part neighbor model
+place R part model neighbor@Part.Part{Part.pos} = add (pos + V2 (Part.size part / 2 + Part.size neighbor / 2) 0) part neighbor model
+place L part model neighbor@Part.Part{Part.pos} = add (pos + V2 (-Part.size part / 2 - Part.size neighbor / 2) 0) part neighbor model
 
 instance Physics Part.Part where
     getId = Part.id
@@ -115,18 +116,22 @@ instance Physics Part.Part where
               targetParts = Map.elems $ getParts inModel target
               targetPart = targetParts !! pid
               (n, newGen1) = randomR (0, length enemies - 1) $ gen inModel
-              (pid, newGen) = randomR (0, length targetParts - 1) newGen1
+              (pid, newGen2) = randomR (0, length targetParts - 1) newGen1
+              (rtime, newGen) = randomR (0, 1) newGen2
+              multiplier = 1000 / fromIntegral gameFPS
               model = inModel {parts = updatePhysics inParts newSelf, gen = newGen}
               newSelf = 
                 case stats of
                     Part.Hull -> self
-                    Part.Gun prec goal timer size damage speed -> self {Part.stats = Part.Gun prec goal (timer + dt) size damage speed}
+                    gun@Part.Gun{..} -> 
+                        if timer + dt > timerGoal && timer < timerGoal then self {Part.stats = gun {Part.timer = timer + dt, Part.shotsLeft = salvoSize} }
+                        else self {Part.stats = gun {Part.timer = timer + dt + rtime * multiplier, Part.salvoTimer = salvoTimer + dt + rtime * multiplier}}
 
 -- Shoots a shot from the specified ship at the specified position.
 shoot :: Model -> Part.Part -> V2 Double -> Model
-shoot model@(Model {..}) self@Part.Part{stats = Part.Gun prec _ _ shotSize shotDamage shotSpeed} targetPos
+shoot model@(Model {..}) self@Part.Part{stats=Part.Gun{..}} targetPos
     | canShoot self = model {shots = Map.insert nShots newShot shots, nShots = nShots + 1,
-                             parts = updatePhysics parts $ resetTimer self,
+                             parts = updatePhysics parts $ resetGun self,
                              gen = newGen}
     | otherwise = model
     where (miss, newGen) = randomR (-1, 1) gen 
