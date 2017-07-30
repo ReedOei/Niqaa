@@ -35,35 +35,13 @@ import qualified Controller.Part as Part
 import qualified Controller.Ship as Ship
 import qualified Controller.Shot as Shot
 
+import Ships -- Contains ships definitions
+
 gameFPS = 60
-
-kiraara = 
-    (
-        Ship.Ship (-1) "Kiraara" 1 (V2 500 500),
-        [(U, Part.base), (L, Part.gun), (R, Part.gun)]
-    )
-
-vijossk =
-    (
-        Ship.Ship (-1) "Vijossk" 2 (V2 600 100),
-        [(U, Part.base), (U, Part.base), (U, Part.base), (L, Part.gun)]
-    )
-
-videre = 
-    (
-        Ship.Ship (-1) "Videre" 3 (V2 1000 600),
-        [(R, Part.base), (R, Part.base), (U, Part.gun)]
-    )
-
-hija = 
-    (
-        Ship.Ship (-1) "Hija" 4 (V2 100 500),
-        [(L, Part.gun), (D, Part.gun), (U, Part.gun)]
-    )
 
 initial :: (Model, Cmd SDLEngine Action)
 initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) InitRandom) -- Command is to set up the initial random generator.
-    where shipList = [kiraara, vijossk, videre, hija]
+    where shipList = [kiraara, vijossk, videre, hija, davanja]
           model = foldl Part.buildShip initModel shipList
           initModel = 
              Model 
@@ -76,7 +54,7 @@ initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) Init
                 nShots = 1,
                 nParts = 1,
                 gen = mkStdGen 1,
-                worldSize = V2 1200 700
+                worldSize = V2 1600 800
              }
 
 update :: Model -> Action -> (Model, Cmd SDLEngine Action)
@@ -103,14 +81,18 @@ subscriptions = Sub.batch [Mouse.clicks handleClick,
 
 view :: Model -> Graphics SDLEngine
 view model@(Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) ++ map showShot (Map.elems shots))
-    where showShip ship = group $ (map showPart $ Map.elems $ Part.getParts model ship) ++ [name]
+    where showShip ship@Ship.Ship{Ship.color=color@(r,g,b)} = 
+                group $ (map (showPart color) $ Map.elems $ Part.getParts model ship) ++ [name]
                 -- we want it to be just slightly above the highest piece.
                 where name = case Part.getFarthest U model ship of
                                 Just part@Part.Part{Part.pos = V2 x y} -> 
-                                    move (V2 x (y - 20 / 2 - 10)) $ text $ Text.height 12 $ Text.color (rgb 1 0 0) $ Text.toText $ Ship.name ship
+                                    move (V2 x (y - 20 / 2 - 10)) $ text $ Text.height 12 $ Text.color (rgb r g b) $ Text.toText $ Ship.name ship
                                 Nothing -> text $ Text.toText ""
-          showPart (Part.Part {..}) = move pos $ filled (rgb 1 0 0) $ square size
-          showShot (Shot.Shot {..}) = move pos $ filled (rgb 0 0 1) $ square size
+          showPart (r,g,b) (Part.Part {..}) = move pos $ filled (rgb r g b) $ square size
+          showShot (Shot.Shot {..}) = 
+            case Map.lookup launchId ships of
+                Just Ship.Ship{Ship.color=(r,g,b)} -> move pos $ filled (rgb r g b) $ square size
+                Nothing -> blank
 
 main :: IO ()
 main = do

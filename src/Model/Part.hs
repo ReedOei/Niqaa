@@ -17,5 +17,5 @@ data Part = Part { id :: Int,
     deriving Show
 
 data Stats = Hull | 
-             Gun Double Double Double -- Precision, timer goal, timer
+             Gun Double Double Double Double Double Double -- Precision, timer goal, timer, shot size, shot damage, shot speed
     deriving Show
