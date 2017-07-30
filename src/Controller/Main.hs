@@ -31,10 +31,10 @@ inRect (V2 x1 y1) (Rect x2 y2 w h) = x1 `inRange` (x2 - w, x2 + w) && y1 `inRang
 
 collide :: Rect -> Rect -> Bool
 collide (Rect x1 y1 w1 h1) (Rect x2 y2 w2 h2) = 
-    x1 - w1 < x2 + w2 &&
-    x1 + w1 > x2 - w2 &&
-    y1 - h1 < y2 + h2 &&
-    y1 + h1 > y2 - h2
+    x1 - w1 / 2 < x2 + w2 / 2 &&
+    x1 + w1 / 2 > x2 - w2 / 2 &&
+    y1 - h1 / 2 < y2 + h2 / 2 &&
+    y1 + h1 / 2 > y2 - h2 / 2
 
 class Physics o where
     getId :: o -> Int

@@ -20,6 +20,8 @@ import qualified Helm.Time as Time
 
 import qualified Data.Map as Map
 
+import System.Random
+
 -- All of the types and actual game functions are defined in here/sub libraries.
 import Lib
 
@@ -35,14 +37,51 @@ import qualified Controller.Shot as Shot
 
 gameFPS = 60
 
+kiraara = 
+    (
+        Ship.Ship (-1) "Kiraara" 1 (V2 500 500),
+        [(U, Part.base), (L, Part.gun), (R, Part.gun)]
+    )
+
+vijossk =
+    (
+        Ship.Ship (-1) "Vijossk" 2 (V2 600 100),
+        [(U, Part.base), (U, Part.base), (U, Part.base), (L, Part.gun)]
+    )
+
+videre = 
+    (
+        Ship.Ship (-1) "Videre" 3 (V2 1000 600),
+        [(R, Part.base), (R, Part.base), (U, Part.gun)]
+    )
+
+hija = 
+    (
+        Ship.Ship (-1) "Hija" 4 (V2 100 500),
+        [(L, Part.gun), (D, Part.gun), (U, Part.gun)]
+    )
+
 initial :: (Model, Cmd SDLEngine Action)
-initial = (Model 1 initShips Map.empty (Map.size initShips + 1) 1, Cmd.none)
-    where initShips = Map.fromList [(1, Part.place R Part.gun $ Part.place L Part.gun $ Part.place U Part.base $ Ship.Ship 1 "Kiraara" 1 (V2 500 500) Map.empty 0),
-                                    (2, Part.place L Part.gun $ Part.place U Part.base $ Part.place U Part.base $ Part.place U Part.base $ Ship.Ship 2 "Vijossk" 2 (V2 600 100) Map.empty 0),
-                                    (3, Part.place U Part.gun $ Part.place R Part.base $ Part.place R Part.base $ Ship.Ship 3 "Videre" 3 (V2 1000 600) Map.empty 0),
-                                    (4, Part.place U Part.gun $ Part.place D Part.gun $ Part.place L Part.gun $ Ship.Ship 4 "Hija" 4 (V2 100 500) Map.empty 0)]
+initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) InitRandom) -- Command is to set up the initial random generator.
+    where shipList = [kiraara, vijossk, videre, hija]
+          model = foldl Part.buildShip initModel shipList
+          initModel = 
+             Model 
+             {
+                currentShip = -1,
+                ships = Map.empty,
+                parts = Map.empty,
+                shots = Map.empty,
+                nShips = 1,
+                nShots = 1,
+                nParts = 1,
+                gen = mkStdGen 1,
+                worldSize = V2 1200 700
+             }
 
 update :: Model -> Action -> (Model, Cmd SDLEngine Action)
+update model (InitRandom gen) = (model {gen = gen}, Cmd.none)
+
 -- Change the current ship when we right click
 update model@(Model {..}) (RClick pos) =
     case Ship.findAt pos ships of
@@ -50,10 +89,7 @@ update model@(Model {..}) (RClick pos) =
         Nothing -> (model {currentShip = (-1)}, Cmd.none)
 
 -- Shoot a shot from our ship if we can at the place we clicked on
-update model@(Model {..}) (LClick pos) = 
-    case Ship.getCurrent model of
-        Just ship -> (Shot.create model ship pos, Cmd.none)
-        Nothing -> (model, Cmd.none)
+update model@(Model {..}) (LClick pos) = (model, Cmd.none)
 
 update model (Step dt) = (doStep dt $ Ship.checkDestroyed $ handlePhysics model, Cmd.none)
 update model None = (model, Cmd.none)
@@ -66,13 +102,13 @@ subscriptions = Sub.batch [Mouse.clicks handleClick,
           handleClick _ _ = None
 
 view :: Model -> Graphics SDLEngine
-view (Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) ++ map showShot (Map.elems shots))
-    where showShip ship@(Ship.Ship {Ship.pos = V2 x y}) = 
-                group $ 
-                    (map showPart $ Map.elems $ Ship.parts ship) ++ [
-                    -- The (-10) adjustment is because the text is 12 pixels tall, so we add 7 to get it out of the ship
-                    -- and another few so it's not directly on it.
-                    move (V2 x (y - 20 / 2 - 10)) $ text $ Text.height 12 $ Text.color (rgb 1 0 0) $ Text.toText $ Ship.name ship]
+view model@(Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) ++ map showShot (Map.elems shots))
+    where showShip ship = group $ (map showPart $ Map.elems $ Part.getParts model ship) ++ [name]
+                -- we want it to be just slightly above the highest piece.
+                where name = case Part.getFarthest U model ship of
+                                Just part@Part.Part{Part.pos = V2 x y} -> 
+                                    move (V2 x (y - 20 / 2 - 10)) $ text $ Text.height 12 $ Text.color (rgb 1 0 0) $ Text.toText $ Ship.name ship
+                                Nothing -> text $ Text.toText ""
           showPart (Part.Part {..}) = move pos $ filled (rgb 1 0 0) $ square size
           showShot (Shot.Shot {..}) = move pos $ filled (rgb 0 0 1) $ square size
 
@@ -80,7 +116,7 @@ main :: IO ()
 main = do
     engine <- SDL.startupWith $ SDL.defaultConfig
                 { SDL.windowIsResizable = False,
-                  SDL.windowDimensions = V2 1280 720 }
+                  SDL.windowDimensions = floor <$> (worldSize $ fst initial) }
 
     run engine GameConfig
      {

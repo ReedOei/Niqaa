@@ -3,8 +3,6 @@
 
 module Controller.Shot
     (
-        shot_size, shot_speed, shot_damage,
-        create
     ) where
 
 import Data.List (find)
@@ -20,12 +18,12 @@ import qualified Model.Ship as Ship
 import Controller.Main
 import qualified Controller.Part as Part
 
-import System.IO.Unsafe
+import Misc
 
-shot_size :: Double
-shot_size = 5
-shot_speed = 1
-shot_damage = 3
+import System.IO.Unsafe
+import System.Random
+
+damage amount part@(Part.Part {..}) = part {Part.health = health - amount}
 
 instance Physics Shot.Shot where
     getId = Shot.id
@@ -36,41 +34,23 @@ instance Physics Shot.Shot where
         model {shots = Map.insert id (doMove shot) shots}
 
     handleCollisions model@(Model {..}) shot@(Shot.Shot {..}) = 
-        case concat $ Map.elems $ Map.map (checkCollisions shot . Ship.parts) ships of
+        case checkCollisions shot parts of
             [] -> model
-            collisions -> case find (\part -> Part.shipId part /= launchId) collisions of
-                        Just part -> let newPart = Part.damage shot_damage part in
-                            case Part.health newPart > 0 of
-                                -- If it's still alive, just update it, which means we need to find the ship it comes from
-                                True -> case Map.lookup (Part.shipId newPart) ships of
-                                            Just ship -> 
-                                                model {shots = Map.delete (Shot.id shot) shots,
-                                                       ships = Map.insert (Ship.id ship) (ship {Ship.parts = Map.insert (getId newPart) newPart $ Ship.parts ship}) ships}
-                                            Nothing -> error "Couldn't find parent ship of part."
+            collisions -> 
+                case find (\part -> Part.shipId part /= launchId) collisions of
+                    Just part -> let newPart = damage shotDamage part in
+                        case Part.health newPart > 0 of
+                            -- If it's still alive, just update it, which means we need to find the ship it comes from
+                            True -> model {shots = Map.delete (Shot.id shot) shots,
+                                           parts = Map.insert (getId newPart) newPart parts}
 
-                                -- Otherwise, get rid of it, because it's dead
-                                False -> case Map.lookup (Part.shipId newPart) ships of
-                                            Just ship@(Ship.Ship {..}) ->
-                                                model {shots = Map.delete (Shot.id shot) shots,
-                                                       ships = Map.insert (Ship.id ship) (ship {Ship.parts = Map.delete (getId newPart) $ Ship.parts ship}) ships}
-                                            Nothing -> error "Couldn't find parent ship of part."
-                        Nothing -> model
-
-    handleStep dt model self = model
-
--- Shoots a shot from the specified ship at the specified position.
-create :: Model -> Ship.Ship -> V2 Double -> Model
-create model@(Model {..}) ship@(Ship.Ship {..}) targetPos = afterShot
-    where gunPart = find (\part -> Part.partType part == "gun" && Part.timer part > Part.timeGoal part) $ Map.elems parts
-          newShots nextGun = 
-            Map.insert nShots (Shot.Shot nShots (Part.pos nextGun) vel shot_size (Ship.factionId ship) $ Ship.id ship) shots
-            where vel = normalize (targetPos - Part.pos nextGun) * shot_speed
-          afterShot = 
-            case gunPart of 
-                Just nextGun@Part.Part{..} -> 
-                    case Map.lookup shipId ships of
-                        Just ship@Ship.Ship{Ship.parts} -> model {shots = newShots nextGun, nShots = nShots + 1,
-                                                                  ships = Map.insert shipId (ship {Ship.parts = updatePhysics parts $ nextGun {Part.timer = 0}}) ships}
-                        Nothing -> error "Couldn't find parent ship of part."
-                Nothing -> model
+                            -- Otherwise, get rid of it, because it's dead
+                            False -> model {shots = Map.delete (Shot.id shot) shots,
+                                            parts = Map.delete (getId newPart) parts}
+                    Nothing -> model
+    
+    -- Delete ourselves if we're out of bounds
+    handleStep dt model@Model{worldSize = V2 w h, shots} self@Shot.Shot{Shot.id, Shot.pos = V2 x y}
+        | x < 0 || y < 0 || x >= w || y >= h = model {shots = Map.delete id shots}
+        | otherwise = model
 

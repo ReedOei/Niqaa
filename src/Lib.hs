@@ -16,10 +16,12 @@ import qualified Controller.Ship as Ship
 handlePhysics :: Model -> Model
 handlePhysics model = afterShips
     where afterShots = Map.foldl doPhysics model $ shots model
-          afterShips = Map.foldl doPhysics afterShots $ ships afterShots
+          afterParts = Map.foldl doPhysics afterShots $ parts afterShots
+          afterShips = Map.foldl doPhysics afterParts $ ships afterParts
 
 -- Do all the stuff that relies on the timestamp/being repeated.
 doStep :: Double -> Model -> Model
 doStep dt model = afterShips
     where afterShots = Map.foldl (handleStep dt) model $ shots model
-          afterShips = Map.foldl (handleStep dt) afterShots $ ships afterShots
+          afterParts = Map.foldl (handleStep dt) afterShots $ parts afterShots
+          afterShips = Map.foldl (handleStep dt) afterParts $ ships afterParts

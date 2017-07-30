@@ -12,7 +12,5 @@ import qualified Model.Part as Part
 data Ship = Ship { id :: Int,
                    name :: String,
                    factionId :: Int,
-                   pos :: V2 Double,
-                   parts :: Map.Map Int Part.Part,
-                   nParts :: Int}
+                   pos :: V2 Double}
     deriving (Show)

@@ -1,17 +1,21 @@
 module Model.Part
     (
-        Part (..)
+        Part (..),
+        Stats (..)
     ) where
 
 import Linear.V2 (V2(V2))
 
 data Part = Part { id :: Int,
                    shipId :: Int,
-                   partType :: String,
                    pos :: V2 Double,
                    vel :: V2 Double,
-                   health :: Int,
+                   health :: Double,
                    size :: Double,
-                   timeGoal :: Double,
-                   timer :: Double }
+                   factionId :: Int,
+                   stats :: Stats}
+    deriving Show
+
+data Stats = Hull | 
+             Gun Double Double Double -- Precision, timer goal, timer
     deriving Show
