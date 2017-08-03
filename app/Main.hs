@@ -39,8 +39,7 @@ import Ships -- Contains ships definitions
 
 initial :: (Model, Cmd SDLEngine Action)
 initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) InitRandom) -- Command is to set up the initial random generator.
-    where shipList = [kiraara, vijossk, videre, hija, davanja, pischki]
-          model = foldl Part.buildShip initModel shipList
+    where model = initModel
           initModel = 
              Model 
              {
@@ -52,7 +51,7 @@ initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) Init
                 nShots = 1,
                 nParts = 1,
                 gen = mkStdGen 1,
-                worldSize = V2 1600 800
+                worldSize = V2 world_width world_height
              }
 
 update :: Model -> Action -> (Model, Cmd SDLEngine Action)
@@ -65,10 +64,19 @@ update model@(Model {..}) (RClick pos) =
         Nothing -> (model {currentShip = (-1)}, Cmd.none)
 
 -- Shoot a shot from our ship if we can at the place we clicked on
-update model@(Model {..}) (LClick pos) = (model, Cmd.none)
+update model@(Model {..}) (LClick pos) = update model (AddRandomShipPos pos allShips)
 
 update model (Step dt) = (doStep dt $ Ship.checkDestroyed $ handlePhysics model, Cmd.none)
 update model None = (model, Cmd.none)
+update model (AddRandomShip patterns) = update (model {gen = newGen}) (AddShip (V2 x y) (patterns !! i))
+    where (i, newGen1) = randomR (0, length patterns - 1) $ gen model
+          (x, newGen2) = randomR (0, world_width) newGen1
+          (y, newGen) = randomR (0, world_height) newGen2
+
+update model (AddRandomShipPos pos patterns) = update (model {gen = newGen}) (AddShip pos (patterns !! i))
+    where (i, newGen) = randomR (0, length patterns - 1) $ gen model
+
+update model (AddShip pos (ship, pattern)) = (Part.buildShip model (ship {Ship.pos = pos}, pattern), Cmd.none)
 
 subscriptions :: Sub SDLEngine Action
 subscriptions = Sub.batch [Mouse.clicks handleClick,

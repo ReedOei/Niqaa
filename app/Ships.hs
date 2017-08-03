@@ -5,7 +5,8 @@ module Ships
         videre,
         hija,
         davanja,
-        pischki
+        pischki,
+        allShips
     ) where
 
 import Linear.V2 (V2(V2))
@@ -16,6 +17,8 @@ import qualified Model.Ship as Ship
 
 import Controller.Main
 import qualified Controller.Part as Part
+
+allShips = [pischki, kiraara, vijossk, videre, hija, davanja]
 
 base :: Part.Part
 base = Part.Part 

@@ -2,10 +2,6 @@
 
 Niqaa is a game about space combat. And, for the moment, that's pretty much all it is.
 
-# Contributors
-- Reed Oei
-- Meg O'Brien (soon)
-
 # Installation
 
 You need Haskell, Stack, and SDL2 installed to build Niqaa.
@@ -27,4 +23,8 @@ stack install gtk2hs-buildtools
 stack build
 stack exec Niqaa
 ~~~
+
+# Contributors
+- Reed Oei
+- Meg O'Brien (soon)
 
