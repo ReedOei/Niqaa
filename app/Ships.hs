@@ -100,7 +100,7 @@ broadSide = Part.makeGun 20 15 $ Part.Gun
 machineGun = Part.makeGun 35 40 $ Part.Gun
     {
         Part.prec = 10,     -- I imagine machine guns are not that accurate
-        Part.timerGoal = 35000, -- Lasers do many shots, but then have long cooldown for the gun, plus replacing the magazine
+        Part.timerGoal = 35000, 
         Part.timer = 0,
         Part.shotSize = 2,   -- Shots are probably pretty small?
         Part.shotDamage = 4,
@@ -111,7 +111,7 @@ machineGun = Part.makeGun 35 40 $ Part.Gun
         Part.salvoTimer = 0
     }
 
--- This gun is very technologicall advanced: it fires very precise shots, 2 shots at a time, in rapid succession. Yet the shots are very weak and small, and the gun itself is rather fragile. A small amount of damage is devastating to the gun.
+-- This gun is very technologically advanced: it fires very precise shots, 2 shots at a time, in rapid succession. Yet the shots are very weak and small, and the gun itself is rather fragile. A small amount of damage is devastating to the gun.
 megaLaser = Part.makeGun 3 30 $ Part.Gun
     {
         Part.prec = 1,
@@ -120,20 +120,20 @@ megaLaser = Part.makeGun 3 30 $ Part.Gun
         Part.shotSize = 1,
         Part.shotDamage = 0.25,
         Part.shotSpeed = 5,
-        Part.salvoSize = 2,
+        Part.salvoSize = 1,
         Part.shotsLeft = 0,
         Part.salvoTimerGoal = 0,
         Part.salvoTimer = 0
     }
 
 -- This is a very massive gun developed by the Big Gun People. It's a very "manly man's" kind of gun. Very showy. Very inaccurate. But devastatingly powerful.
-bigBullet = Part.makeGun 5 5 $ Part.Gun
+bigBullet = Part.makeGun 50 50 $ Part.Gun
     {
         Part.prec = 30,
         Part.timerGoal = 10000,
         Part.timer = 0,
         Part.shotSize = 7,
-        Part.shotDamage = 50,
+        Part.shotDamage = 100,
         Part.shotSpeed = 1,
         Part.salvoSize = 1,
         Part.shotsLeft = 0,
@@ -148,8 +148,8 @@ slingShot = Part.makeGun 1 2 $ Part.Gun
         Part.timerGoal = 3000,
         Part.timer = 0,
         Part.shotSize = 1,
-        Part.shotDamage = 0.005,
-        Part.shotSpeed = 0.05,
+        Part.shotDamage = 0.5,
+        Part.shotSpeed = 0.5,
         Part.salvoSize = 1,
         Part.shotsLeft = 0,
         Part.salvoTimerGoal = 0,
@@ -157,7 +157,7 @@ slingShot = Part.makeGun 1 2 $ Part.Gun
     }
 
 -- This is the byproduct of a very whimsical gunmaker.
-explosiveFrisbee = Part.makeGun 15 20 $ Part.Gun
+{-explosiveFrisbee = Part.makeGun 15 20 $ Part.Gun
     {
         Part.prec = floor $ rand (1,20),
         Part.timerGoal = floor $ rand (1000, 10000),
@@ -172,7 +172,7 @@ explosiveFrisbee = Part.makeGun 15 20 $ Part.Gun
     }
           where rand range = do
                   random <- randRange range
-                  return random
+                  return random-}
 
 pischki =
     (
