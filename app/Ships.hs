@@ -5,7 +5,8 @@ module Ships
         videre,
         hija,
         davanja,
-        pischki
+        pischki,
+        allShips
     ) where
 
 import Linear.V2 (V2(V2))
@@ -22,8 +23,10 @@ import qualified Controller.Part as Part
 randRange :: (Random a, Num a) => (a, a) -> IO a
 randRange r = getStdRandom (randomR r)
 
+allShips = [pischki, kiraara, vijossk, videre, hija, davanja]
+
 base :: Part.Part
-base = Part.Part
+base = Part.Part 
     {
         Part.id = -1,
         Part.name = "",
@@ -38,7 +41,7 @@ base = Part.Part
     }
 
 gun :: Part.Part
-gun = Part.makeGun 5 5 $ Part.Gun
+gun = Part.makeGun 5 5 $ Part.Gun 
     {
         Part.prec = 5,
         Part.timerGoal = 2000,
@@ -171,7 +174,6 @@ explosiveFrisbee = Part.makeGun 15 20 $ Part.Gun
                   random <- randRange range
                   return random
 
-
 pischki =
     (
         Ship.Ship
@@ -203,7 +205,7 @@ pischki =
         ]
     )
 
-kiraara =
+kiraara = 
     (
         Ship.Ship
         {
@@ -246,9 +248,9 @@ vijossk =
         ]
     )
 
-videre =
+videre = 
     (
-        Ship.Ship
+        Ship.Ship 
         {
             Ship.id = -1,
             Ship.name = "Videre",

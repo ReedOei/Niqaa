@@ -62,8 +62,6 @@ resetGun part@Part.Part{Part.stats = stats@Part.Gun{..}}
     | shotsLeft == 0 = part {Part.stats = stats {Part.timer = 0, Part.salvoTimer = 0}}
     | otherwise = part {Part.stats = stats {Part.shotsLeft = shotsLeft - 1}}
 
-type BuildItem = ((Direction, String), (Part.Part, String))
-type BuildPattern = (Ship.Ship, [BuildItem])
 
 buildShip :: Model -> BuildPattern -> Model
 buildShip inModel@Model{nShips, ships} (inShip, buildParts) = foldl addParts model buildParts
