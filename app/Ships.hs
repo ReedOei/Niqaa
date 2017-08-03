@@ -11,12 +11,17 @@ module Ships
 
 import Linear.V2 (V2(V2))
 
+import System.Random
+
 import Model.Main
 import qualified Model.Part as Part
 import qualified Model.Ship as Ship
 
 import Controller.Main
 import qualified Controller.Part as Part
+
+randRange :: (Random a, Num a) => (a, a) -> IO a
+randRange r = getStdRandom (randomR r)
 
 allShips = [pischki, kiraara, vijossk, videre, hija, davanja]
 
@@ -91,6 +96,83 @@ broadSide = Part.makeGun 20 15 $ Part.Gun
         Part.salvoTimerGoal = 100,
         Part.salvoTimer = 0
     }
+
+machineGun = Part.makeGun 35 40 $ Part.Gun
+    {
+        Part.prec = 10,     -- I imagine machine guns are not that accurate
+        Part.timerGoal = 35000, -- Lasers do many shots, but then have long cooldown for the gun, plus replacing the magazine
+        Part.timer = 0,
+        Part.shotSize = 2,   -- Shots are probably pretty small?
+        Part.shotDamage = 4,
+        Part.shotSpeed = 1.5,
+        Part.salvoSize = 200,
+        Part.shotsLeft = 0,
+        Part.salvoTimerGoal = 0,
+        Part.salvoTimer = 0
+    }
+
+-- This gun is very technologicall advanced: it fires very precise shots, 2 shots at a time, in rapid succession. Yet the shots are very weak and small, and the gun itself is rather fragile. A small amount of damage is devastating to the gun.
+megaLaser = Part.makeGun 3 30 $ Part.Gun
+    {
+        Part.prec = 1,
+        Part.timerGoal = 50,
+        Part.timer = 0,
+        Part.shotSize = 1,
+        Part.shotDamage = 0.25,
+        Part.shotSpeed = 5,
+        Part.salvoSize = 2,
+        Part.shotsLeft = 0,
+        Part.salvoTimerGoal = 0,
+        Part.salvoTimer = 0
+    }
+
+-- This is a very massive gun developed by the Big Gun People. It's a very "manly man's" kind of gun. Very showy. Very inaccurate. But devastatingly powerful.
+bigBullet = Part.makeGun 5 5 $ Part.Gun
+    {
+        Part.prec = 30,
+        Part.timerGoal = 10000,
+        Part.timer = 0,
+        Part.shotSize = 7,
+        Part.shotDamage = 50,
+        Part.shotSpeed = 1,
+        Part.salvoSize = 1,
+        Part.shotsLeft = 0,
+        Part.salvoTimerGoal = 0,
+        Part.salvoTimer = 0
+    }
+
+-- This is more of your "this is our first try at the whole space travel thing. we're, like, prolly the only people advanced enough to make it into space, so these guns are probably good enough. we'll prolly only need them against, like, spacewhales" kind of gun.
+slingShot = Part.makeGun 1 2 $ Part.Gun
+    {
+        Part.prec = 25,
+        Part.timerGoal = 3000,
+        Part.timer = 0,
+        Part.shotSize = 1,
+        Part.shotDamage = 0.005,
+        Part.shotSpeed = 0.05,
+        Part.salvoSize = 1,
+        Part.shotsLeft = 0,
+        Part.salvoTimerGoal = 0,
+        Part.salvoTimer = 0
+    }
+
+-- This is the byproduct of a very whimsical gunmaker.
+explosiveFrisbee = Part.makeGun 15 20 $ Part.Gun
+    {
+        Part.prec = floor $ rand (1,20),
+        Part.timerGoal = floor $ rand (1000, 10000),
+        Part.timer = 0,
+        Part.shotSize = 1.3,   -- per official explosive frisbee standards
+        Part.shotDamage = rand (2, 2.2),
+        Part.shotSpeed = 1.5,
+        Part.salvoSize = floor $ rand (1,3), -- one machine can only throw
+        Part.shotsLeft = 0,
+        Part.salvoTimerGoal = floor $ rand (20, 40),
+        Part.salvoTimer = 0
+    }
+          where rand range = do
+                  random <- randRange range
+                  return random
 
 pischki =
     (
@@ -180,16 +262,16 @@ videre =
         },
         [
             ((U, "ship"), (base, "ship")),
-            ((R, "ship"), (base, "starboard")), 
-            ((L, "ship"), (base, "port")), 
+            ((R, "ship"), (base, "starboard")),
+            ((L, "ship"), (base, "port")),
             ((R, "starboard"), (gun, "rightGun")),
             ((L, "port"), (gun, "leftGun"))
         ]
     )
 
-hija = 
+hija =
     (
-        Ship.Ship 
+        Ship.Ship
         {
             Ship.id = -1,
             Ship.name = "Hija",
@@ -221,7 +303,6 @@ davanja =
         },
         [
             ((U, "ship"), (base, "ship")),
-            ((U, "ship"), (howitzer, "howitzer")) 
+            ((U, "ship"), (howitzer, "howitzer"))
         ]
     )
-
