@@ -33,9 +33,9 @@ type BuildPattern = (Ship.Ship, [BuildItem])
 data Direction = U | D | L | R
     deriving (Eq, Show)
 
-data Action = LClick (V2 Double) | 
-              RClick (V2 Double) | 
-              None | 
+data Action = LClick (V2 Double) |
+              RClick (V2 Double) |
+              None |
               Step Double |
               InitRandom StdGen |
               AddRandomShip [BuildPattern] |
@@ -48,7 +48,7 @@ data Model = Model { currentShip :: Int, -- The id of the current ship
                      ships :: Map.Map Int Ship.Ship,
                      shots :: Map.Map Int Shot.Shot,
                      parts :: Map.Map Int Part.Part,
-                     nShips :: Int, 
+                     nShips :: Int,
                      nShots :: Int,
                      nParts :: Int,
                      worldSize :: V2 Double,
@@ -59,8 +59,13 @@ data Faction = Faction { factionId :: Int,
                          factioNName :: String}
     deriving Show
 
-data Rect = Rect Double Double Double Double
+-- X position of the center, Y position of the center, Width, Height, Angle
+type XCenter = Double
+type YCenter = Double
+type Width = Double
+type Height = Double
+type Angle = Double
+data Rect = Rect XCenter YCenter Width Height Angle
 
 gameFPS :: Int
 gameFPS = 60
-

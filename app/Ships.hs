@@ -22,11 +22,9 @@ import qualified Model.Ship as Ship
 import Controller.Main
 import qualified Controller.Part as Part
 
-randRange :: (Random a, Num a) => (a, a) -> IO a
-randRange r = getStdRandom (randomR r)
 
--- allShips = [pischki, kiraara, vijossk, videre, hija, davanja, jin, tiktok]
-allShips = [tiktok, tiktok, tiktok, tiktok, pischki]
+-- allShips = [pischki, kiraara, vijossk, videre, hija, davanja, jin, tiktok, blaqiiiiip]
+allShips = [tiktok, tiktok, pischki, blaqiiiiip, blaqiiiiip, blaqiiiiip, blaqiiiiip, blaqiiiiip]
 
 
 base :: Part.Part
@@ -133,7 +131,7 @@ machineGun = Part.makeGun 35 40 $ Part.Gun
     {
         Part.prec = 10,     -- I imagine machine guns are not that accurate
         Part.timerGoal = 35000,
-        Part.timer = 0,
+        Part.timer = 17500,
         Part.shotSize = 2,   -- Shots are probably pretty small?
         Part.shotDamage = 4,
         Part.shotSpeed = 1.5,
@@ -364,22 +362,64 @@ tiktok =
         {
             Ship.id = -1,
             Ship.name = "Tiktok",
-            Ship.classType = "Destroyer",
-            Ship.classAbb = "DD",
+            Ship.classType = "Artillery",
+            Ship.classAbb = "ART",
             Ship.color = (0.8627, 0.078431, 0.23529),
             Ship.factionId = 8,
             Ship.pos = V2 0 0
         },
         [
             ((U, "ship"), (base, "ship")),
-            ((R, "ship"), (miniBase, "leftBow")),
-            ((R, "leftBow"), (megaLaser, "megaLaser")),
+            ((R, "ship"), (miniBase, "rightBow")),
+            ((R, "rightBow"), (megaLaser, "megaLaser")),
             ((U, "megaLaser"), (megaLaser, "megaLaser2")),
             ((U, "megaLaser2"), (megaLaser, "megaLaser3")),
             ((U, "megaLaser3"), (megaLaser, "megaLaser4")),
-            ((L, "ship"), (megaLaser, "megaLaser5")),
+            ((L, "ship"), (miniBase, "leftBow")),
+            ((L, "leftBow"), (megaLaser, "megaLaser5")),
             ((U, "megaLaser5"), (megaLaser, "megaLaser6")),
             ((U, "megaLaser6"), (megaLaser, "megaLaser7")),
             ((U, "megaLaser7"), (megaLaser, "megaLaser8"))
+        ]
+    )
+
+
+blaqiiiiip =
+    (
+        Ship.Ship
+        {
+            Ship.id = -1,
+            Ship.name = "Blaqiiiiip",
+            Ship.classType = "Destroyer",
+            Ship.classAbb = "DD",
+            Ship.color = (1, 1, 0.4),
+            Ship.factionId = 9,
+            Ship.pos = V2 0 0
+        },
+        [
+            ((U, "ship"), (base, "ship")),
+
+            ((R, "ship"), (mediBase, "mediBaseR1")),
+            ((R, "mediBaseR1"), (mediBase, "mediBaseR2")),
+            ((R, "mediBaseR2"), (mediBase, "mediBaseR3")),
+            ((R, "mediBaseR3"), (mediBase, "mediBaseR4")),
+            ((R, "mediBaseR4"), (mediBase, "mediBaseR5")),
+            ((R, "mediBaseR5"), (mediBase, "mediBaseR6")),
+            ((U, "mediBaseR6"), (mediBase, "mediBaseRU")),
+            ((U, "mediBaseRU"), (machineGun, "machineGunR1")),
+            ((D, "mediBaseR6"), (mediBase, "mediBaseRD")),
+            ((D, "mediBaseRD"), (machineGun, "machineGunR2")),
+
+            ((L, "ship"), (mediBase, "mediBaseL1")),
+            ((L, "mediBaseL1"), (mediBase, "mediBaseL2")),
+            ((L, "mediBaseL2"), (mediBase, "mediBaseL3")),
+            ((L, "mediBaseL3"), (mediBase, "mediBaseL4")),
+            ((L, "mediBaseL4"), (mediBase, "mediBaseL5")),
+            ((L, "mediBaseL5"), (mediBase, "mediBaseL6")),
+            ((U, "mediBaseL6"), (mediBase, "mediBaseLU")),
+            ((U, "mediBaseLU"), (machineGun, "machineGunL1")),
+            ((D, "mediBaseL6"), (mediBase, "mediBaseLD")),
+            ((D, "mediBaseLD"), (machineGun, "machineGunL2"))
+
         ]
     )
