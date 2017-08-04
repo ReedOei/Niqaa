@@ -25,7 +25,9 @@ import qualified Controller.Part as Part
 randRange :: (Random a, Num a) => (a, a) -> IO a
 randRange r = getStdRandom (randomR r)
 
-allShips = [pischki, kiraara, vijossk, videre, hija, davanja, jin, tiktok]
+-- allShips = [pischki, kiraara, vijossk, videre, hija, davanja, jin, tiktok]
+allShips = [tiktok, tiktok, tiktok, tiktok, pischki]
+
 
 base :: Part.Part
 base = Part.Part
@@ -361,7 +363,7 @@ tiktok =
         Ship.Ship
         {
             Ship.id = -1,
-            Ship.name = "tiktok",
+            Ship.name = "Tiktok",
             Ship.classType = "Destroyer",
             Ship.classAbb = "DD",
             Ship.color = (0.8627, 0.078431, 0.23529),

@@ -40,8 +40,8 @@ import Ships -- Contains ships definitions
 initial :: (Model, Cmd SDLEngine Action)
 initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) InitRandom) -- Command is to set up the initial random generator.
     where model = initModel
-          initModel = 
-             Model 
+          initModel =
+             Model
              {
                 currentShip = -1,
                 ships = Map.empty,
@@ -87,12 +87,12 @@ subscriptions = Sub.batch [Mouse.clicks handleClick,
 
 view :: Model -> Graphics SDLEngine
 view model@(Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) ++ map showShot (Map.elems shots))
-    where showShip ship@Ship.Ship{Ship.color=color@(r,g,b)} = 
+    where showShip ship@Ship.Ship{Ship.color=color@(r,g,b), Ship.pos=V2 shipX _} =
                 group $ (map showPart $ Map.elems $ Part.getParts model ship) ++ [name]
                 -- we want it to be just slightly above the highest piece.
                 where name = case Part.getFarthest U model ship of
-                                Just part@Part.Part{Part.pos = V2 x y} -> 
-                                    move (V2 x (y - 20 / 2 - 10)) $ text $ Text.height 12 $ Text.color (rgb r g b) $ Text.toText $ Ship.name ship
+                                Just part@Part.Part{Part.pos = V2 _ partY} ->
+                                    move (V2 shipX (partY - Part.size part / 2 - 10)) $ text $ Text.height 12 $ Text.color (rgb r g b) $ Text.toText $ Ship.name ship
                                 Nothing -> text $ Text.toText ""
           showPart (Part.Part {..}) = move pos $ filled (rgb r g b) $ square size
             where (r,g,b) = color

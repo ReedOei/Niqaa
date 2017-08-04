@@ -55,7 +55,7 @@ isHull _ = False
 isGun part@Part.Part{stats = Part.Gun{..}} = True
 isGun _ = False
 
-getAdjacentParts model part = checkCollisions part $ getPartsById model $ Part.shipId part 
+getAdjacentParts model part = checkCollisions part $ getPartsById model $ Part.shipId part
 
 -- Should never be used on a non-gun, so let's make it fail if it is
 resetGun part@Part.Part{Part.stats = stats@Part.Gun{..}}
@@ -66,22 +66,22 @@ resetGun part@Part.Part{Part.stats = stats@Part.Gun{..}}
 buildShip :: Model -> BuildPattern -> Model
 buildShip inModel@Model{nShips, ships} (inShip, buildParts) = foldl addParts model buildParts
     where model = inModel {ships = Map.insert (Ship.id ship) ship ships, nShips = nShips + 1}
-          ship@Ship.Ship{Ship.pos, Ship.factionId, Ship.color}  = inShip {Ship.id = nShips} 
+          ship@Ship.Ship{Ship.pos, Ship.factionId, Ship.color}  = inShip {Ship.id = nShips}
           addParts model ((d, lookupName), (part, newName)) =
             case find (\Part.Part{Part.name} -> name == lookupName) $ getPartsById model nShips of
                 Just neighbor -> place d (part {Part.name = newName}) model neighbor
                 Nothing -> place U (part {Part.name = newName}) model (part {Part.pos = pos, Part.shipId = nShips, Part.factionId = factionId, Part.color = color})  -- Place it direction, this is the first piece
 
 add :: V2 Double -> Part.Part -> Part.Part -> Model -> Model
-add placePos part neighbor model@Model{..} = 
-    model {parts = Map.insert (nParts + 1) (part {Part.shipId = Part.shipId neighbor, Part.id = nParts + 1, Part.pos = placePos, Part.factionId = Part.factionId neighbor, Part.color = Part.color neighbor}) parts, 
+add placePos part neighbor model@Model{..} =
+    model {parts = Map.insert (nParts + 1) (part {Part.shipId = Part.shipId neighbor, Part.id = nParts + 1, Part.pos = placePos, Part.factionId = Part.factionId neighbor, Part.color = Part.color neighbor}) parts,
            nParts = nParts + 1}
 
 getPartsById :: Model -> Int -> Map.Map Int Part.Part
 getPartsById model@Model{parts} checkId = Map.filter (\Part.Part {Part.shipId} -> checkId == shipId) parts
 
 getParts :: Model -> Ship.Ship -> Map.Map Int Part.Part
-getParts model@Model{parts} ship@Ship.Ship{Ship.id} = getPartsById model id
+getParts model@Model{parts} ship = getPartsById model $ Ship.id ship
 
 getFarthest :: Direction -> Model -> Ship.Ship -> Maybe Part.Part
 getFarthest U model ship = Safe.minimumBy (comparing (\p -> getY (Part.pos p) - Part.size p / 2)) $ Map.elems $ getParts model ship
@@ -100,7 +100,7 @@ instance Physics Part.Part where
     getBounds (Part.Part {Part.pos = V2 x y, Part.size}) = Rect x y size size
 
     doMove part@Part.Part{Part.pos, Part.vel} = part {Part.pos = pos + vel}
-    handleMove model@(Model {..}) part = 
+    handleMove model@(Model {..}) part =
         model {parts = Map.insert (Part.id part) (doMove part) parts}
 
     handleCollisions model@(Model {..}) self = model
@@ -119,10 +119,10 @@ instance Physics Part.Part where
               (pid, newGen) = randomR (0, length targetParts - 1) newGen2
               multiplier = 1000 / fromIntegral gameFPS
               model = inModel {parts = updatePhysics inParts newSelf, gen = if null enemies then newGen1 else newGen}
-              newSelf = 
+              newSelf =
                 case stats of
                     Part.Hull -> self
-                    gun@Part.Gun{..} -> 
+                    gun@Part.Gun{..} ->
                         if timer + dt > timerGoal && timer < timerGoal then self {Part.stats = gun {Part.timer = timer + dt, Part.shotsLeft = salvoSize, Part.salvoTimer = 0} }
                         else self {Part.stats = gun {Part.timer = timer + dt + rtime * multiplier, Part.salvoTimer = salvoTimer + dt + rtime * multiplier}}
 
@@ -133,9 +133,8 @@ shoot model@(Model {..}) self@Part.Part{Part.stats=Part.Gun{..}, Part.color} tar
                              parts = updatePhysics parts $ resetGun self,
                              gen = newGen}
     | otherwise = model
-    where (miss, newGen) = randomR (-1, 1) gen 
-          newShot = Shot.Shot nShots (Part.pos self) vel shotSize shotDamage color (Part.factionId self) (Part.shipId self) 
+    where (miss, newGen) = randomR (-1, 1) gen
+          newShot = Shot.Shot nShots (Part.pos self) vel shotSize shotDamage color (Part.factionId self) (Part.shipId self)
             where vel = (fromAngle $ angle perfect + miss * prec) * pure shotSpeed
                     where perfect = normalize (targetPos - Part.pos self)
 shoot model _ _ = model -- If not a gun, we obviously can't shoot anything.
-
