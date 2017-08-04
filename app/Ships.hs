@@ -6,6 +6,8 @@ module Ships
         hija,
         davanja,
         pischki,
+        jin,
+        tiktok,
         allShips
     ) where
 
@@ -23,10 +25,10 @@ import qualified Controller.Part as Part
 randRange :: (Random a, Num a) => (a, a) -> IO a
 randRange r = getStdRandom (randomR r)
 
-allShips = [pischki, kiraara, vijossk, videre, hija, davanja]
+allShips = [pischki, kiraara, vijossk, videre, hija, davanja, jin, tiktok]
 
 base :: Part.Part
-base = Part.Part 
+base = Part.Part
     {
         Part.id = -1,
         Part.name = "",
@@ -40,8 +42,36 @@ base = Part.Part
         Part.stats = Part.Hull
     }
 
+miniBase = Part.Part
+    {
+        Part.id = -1,
+        Part.name = "",
+        Part.shipId = -1,
+        Part.pos = V2 0 0,
+        Part.vel = V2 0 0,
+        Part.health = 15,
+        Part.color = (1,1,1),
+        Part.size = 3,
+        Part.factionId = -1,
+        Part.stats = Part.Hull
+    }
+
+mediBase = Part.Part
+    {
+        Part.id = -1,
+        Part.name = "",
+        Part.shipId = -1,
+        Part.pos = V2 0 0,
+        Part.vel = V2 0 0,
+        Part.health = 20,
+        Part.color = (1,1,1),
+        Part.size = 8,
+        Part.factionId = -1,
+        Part.stats = Part.Hull
+    }
+
 gun :: Part.Part
-gun = Part.makeGun 5 5 $ Part.Gun 
+gun = Part.makeGun 5 5 $ Part.Gun
     {
         Part.prec = 5,
         Part.timerGoal = 2000,
@@ -100,7 +130,7 @@ broadSide = Part.makeGun 20 15 $ Part.Gun
 machineGun = Part.makeGun 35 40 $ Part.Gun
     {
         Part.prec = 10,     -- I imagine machine guns are not that accurate
-        Part.timerGoal = 35000, 
+        Part.timerGoal = 35000,
         Part.timer = 0,
         Part.shotSize = 2,   -- Shots are probably pretty small?
         Part.shotDamage = 4,
@@ -205,7 +235,7 @@ pischki =
         ]
     )
 
-kiraara = 
+kiraara =
     (
         Ship.Ship
         {
@@ -248,9 +278,9 @@ vijossk =
         ]
     )
 
-videre = 
+videre =
     (
-        Ship.Ship 
+        Ship.Ship
         {
             Ship.id = -1,
             Ship.name = "Videre",
@@ -304,5 +334,51 @@ davanja =
         [
             ((U, "ship"), (base, "ship")),
             ((U, "ship"), (howitzer, "howitzer"))
+        ]
+    )
+
+jin =
+    (
+        Ship.Ship
+        {
+            Ship.id = -1,
+            Ship.name = "Jin",
+            Ship.classType = "Fighter",
+            Ship.classAbb = "FTR",
+            Ship.color = (0.5, 0.5, 0),
+            Ship.factionId = 7,
+            Ship.pos = V2 0 0
+        },
+        [
+            ((U, "ship"), (base, "ship")),
+            ((R, "ship"), (megaLaser, "megaLaser")),
+            ((L, "ship"), (megaLaser, "megaLaser2"))
+        ]
+    )
+
+tiktok =
+    (
+        Ship.Ship
+        {
+            Ship.id = -1,
+            Ship.name = "tiktok",
+            Ship.classType = "Destroyer",
+            Ship.classAbb = "DD",
+            Ship.color = (0.8627, 0.078431, 0.23529),
+            Ship.factionId = 8,
+            Ship.pos = V2 0 0
+        },
+        [
+            ((U, "ship"), (base, "ship")),
+            ((R, "ship"), (miniBase, "leftBow")),
+            ((R, "leftBow"), (megaLaser, "megaLaser")),
+            ((U, "megaLaser"), (megaLaser, "megaLaser2")),
+            ((U, "megaLaser2"), (megaLaser, "megaLaser3")),
+            ((U, "megaLaser3"), (megaLaser, "megaLaser4")),
+            ((L, "ship"), (megaLaser, "megaLaser5")),
+            ((U, "megaLaser5"), (megaLaser, "megaLaser6")),
+            ((U, "megaLaser6"), (megaLaser, "megaLaser7")),
+            ((U, "megaLaser7"), (megaLaser, "megaLaser8")),
+
         ]
     )
