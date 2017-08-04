@@ -378,7 +378,6 @@ tiktok =
             ((L, "ship"), (megaLaser, "megaLaser5")),
             ((U, "megaLaser5"), (megaLaser, "megaLaser6")),
             ((U, "megaLaser6"), (megaLaser, "megaLaser7")),
-            ((U, "megaLaser7"), (megaLaser, "megaLaser8")),
-
+            ((U, "megaLaser7"), (megaLaser, "megaLaser8"))
         ]
     )
