@@ -24,14 +24,16 @@ import qualified Controller.Part as Part
 
 import Misc
 
+import System.IO.Unsafe
+
 instance Physics Ship.Ship where
     getId = Ship.id
     getBounds (Ship.Ship {Ship.pos = V2 x y}) = Rect x y 20 20
-    
+
     doMove = id -- We do the actual moving in handleMove
 
-    handleMove model@(Model {..}) ship = 
-        model {ships = Map.insert (Ship.id ship) (doMove ship) ships}
+    handleMove model@(Model {..}) ship =
+        model {ships = Map.insert (Ship.id ship) newShip ships}
         where newShip =
               -- We don't want to get the average of our ship parts if there aren't any because then we'll divide by 0.
               -- The ship will be removed next step, so we just need to leave it as is.
@@ -42,7 +44,7 @@ instance Physics Ship.Ship where
     handleCollisions model@(Model {..}) self = model
 
     handleStep dt model self@Ship.Ship{..} = model
-    
+
 getCurrent :: Model -> Maybe Ship.Ship
 getCurrent (Model {..}) = Map.lookup currentShip ships
 
@@ -51,4 +53,3 @@ findAt pos ships = getId <$> (find ((pos `inRect`) . getBounds) $ map snd $ Map.
 
 checkDestroyed :: Model -> Model
 checkDestroyed model@(Model {..}) = model {ships = Map.filter (not . Map.null . Part.getParts model) ships}
-
