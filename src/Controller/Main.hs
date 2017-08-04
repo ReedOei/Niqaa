@@ -26,12 +26,18 @@ normalize :: Floating a => V2 a -> V2 a
 normalize v = v / (pure $ v2Len v)
 
 -- x and y are the position of the center
+
+-- checks if points is in rectangle
+-- FIX
 inRect :: V2 Double -> Rect -> Bool
 inRect (V2 x1 y1) (Rect x2 y2 w h) = x1 `inRange` (x2 - w, x2 + w) && y1 `inRange` (y2 - h, y2 + h)
     where inRange v (l, h) = v >= l && v <= h
 
+
+
+-- FIX 
 collide :: Rect -> Rect -> Bool
-collide (Rect x1 y1 w1 h1) (Rect x2 y2 w2 h2) = 
+collide (Rect x1 y1 w1 h1) (Rect x2 y2 w2 h2) =
     x1 - w1 / 2 <= x2 + w2 / 2 &&
     x1 + w1 / 2 >= x2 - w2 / 2 &&
     y1 - h1 / 2 <= y2 + h2 / 2 &&
@@ -56,7 +62,7 @@ class Physics o where
 
     doMove :: o -> o
     handleMove :: Model -> o -> Model
-    
+
     getBounds :: o -> Rect
 
     handleCollisions :: Model -> o -> Model
@@ -74,4 +80,3 @@ class Physics o where
 
 updatePhysics :: Physics a => Map.Map Int a -> a -> Map.Map Int a
 updatePhysics m self = Map.insert (getId self) self m
-
