@@ -30,5 +30,5 @@ stack exec Niqaa
 
 # Contributors
 - Reed Oei
-- Meg O'Brien (soon)
+- Meg O'Brien
 

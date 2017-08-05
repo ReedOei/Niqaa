@@ -26,14 +26,15 @@ import Misc
 
 import Model.Action
 
-data GUIManager = GUIManager { guiElements :: Map.Map Int GUIElement, nElements :: Int }
+data GUIManager = GUIManager { guiElements :: Map.Map String GUIElement }
     deriving Show
 
-data GUIElement = Button { buttonId :: Int,
+data GUIElement = Button { buttonId :: String,
                            buttonText :: String,
                            buttonPos :: V2 Double,
                            buttonSize :: V2 Double,
                            buttonColor :: Color,
+                           textHeight :: Double,
                            textColor :: Color,
                            buttonAction :: V2 Double -> Action }
 
@@ -46,7 +47,7 @@ showGUI guiManager@GUIManager{..} = group $ map showGUIElement $ Map.elems guiEl
 showGUIElement :: GUIElement -> Form e
 showGUIElement Button{..} =
     group $ [move buttonPos $ filled buttonColor $ rect buttonSize,
-             move buttonPos $ text $ Text.color textColor $ Text.toText buttonText]
+             move buttonPos $ text $ Text.typeface "Callibri" $ Text.height textHeight $ Text.color textColor $ Text.toText buttonText]
 
 handleClick :: GUIManager -> Mouse.MouseButton -> V2 Double -> Maybe Action
 handleClick manager@GUIManager{guiElements} button pos = 
@@ -64,6 +65,3 @@ handleGUIClick button pos self@Button{buttonPos = V2 sx sy, buttonSize=V2 w h, b
 setGUIId v self@Button{..} = self { buttonId = v}
 getGUIId self@Button{..} = buttonId 
 
-addGUIElement manager@GUIManager{..} self = 
-    manager { guiElements = Map.insert nElements (setGUIId nElements self) guiElements, 
-              nElements = nElements + 1}

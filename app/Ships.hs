@@ -2,7 +2,6 @@
 
 module Ships
     (
-        allShips,
         loadPatterns
     ) where
 
@@ -51,8 +50,6 @@ loadPatterns = do
     return $ map (\(ship, items) -> (ship, map (go partDefs) items)) intermediatePatterns
     where go partDefs ((dir, neighbor), (partName, newName)) = ((dir, neighbor), (fromJust $ Map.lookup partName partDefs, newName))
     
-allShips = []
-
 base :: Part.Part
 base = Part.Part
     {

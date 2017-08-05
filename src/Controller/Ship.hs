@@ -28,7 +28,7 @@ import System.IO.Unsafe
 
 instance Physics Ship.Ship where
     getId = Ship.id
-    getBounds (Ship.Ship {Ship.pos = V2 x y}) = Rect x y 20 20
+    getBounds (Ship.Ship {Ship.pos = V2 x y}) = Rect x y 0 0
 
     doMove = id -- We do the actual moving in handleMove
 
@@ -44,6 +44,9 @@ instance Physics Ship.Ship where
     handleCollisions model@(Model {..}) self = model
 
     handleStep dt model self@Ship.Ship{..} = model
+
+getShipSize :: Model -> Ship.Ship -> Rect
+getShipSize model ship = undefined
 
 getCurrent :: Model -> Maybe Ship.Ship
 getCurrent (Model {..}) = Map.lookup currentShip ships

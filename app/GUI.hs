@@ -15,24 +15,41 @@ import Ships
 
 import Helm.Color
 
+backgroundColor = rgb 1 (208/255) (68/255)
+foregroundColor = rgb (20/255) (50/255) (90/255)
+
 buildMainGUI :: GUIManager
 buildMainGUI = GUIManager
                {
-                    guiElements = guiElements,
-                    nElements = Map.size guiElements
+                    guiElements = guiElements
                }
     where guiElements =
             Map.fromList
             [
-                (1, Button
-                    {
-                        buttonId = 1,
-                        buttonText = "Add Ship",
-                        buttonPos = V2 80 50,
-                        buttonSize = V2 100 25,
-                        buttonColor = rgb 1 0.941 0.627,
-                        textColor = rgb 0 0 0,
-                        buttonAction = const AddRandomShip
-                    }
+                ("addButton", 
+                 Button
+                 {
+                     buttonId = "addButton",
+                     buttonText = "Add Ship",
+                     buttonPos = V2 100 50,
+                     buttonSize = V2 150 60,
+                     textHeight = 20,
+                     buttonColor = backgroundColor, 
+                     textColor = foregroundColor,
+                     buttonAction = const AddRandomShip
+                 }
+                ),
+                ("reloadButton",
+                 Button
+                 {
+                    buttonId = "reloadButton",
+                    buttonText = "Reload",
+                    buttonPos = V2 100 120,
+                    buttonSize = V2 150 60,
+                    textHeight = 20,
+                    buttonColor = backgroundColor,
+                    textColor = foregroundColor,
+                    buttonAction = const ReloadPatterns
+                 }
                 )
             ]

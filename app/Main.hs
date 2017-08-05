@@ -54,14 +54,15 @@ initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) Init
                 nShots = 1,
                 nParts = 1,
                 gen = mkStdGen 1,
-                shipPatterns = allShips,
+                shipPatterns = [],
                 worldSize = V2 world_width world_height,
                 guiManager = buildMainGUI
              }
 
 update :: Model -> Action -> (Model, Cmd SDLEngine Action)
 update model (InitRandom gen) = (model {gen = gen}, Cmd.execute loadPatterns LoadPatterns)
-update model@Model{shipPatterns} (LoadPatterns patterns) = (model {shipPatterns = shipPatterns ++ patterns}, Cmd.none)
+update model ReloadPatterns = (model, Cmd.execute loadPatterns LoadPatterns)
+update model@Model{shipPatterns} (LoadPatterns patterns) = (model {shipPatterns = patterns}, Cmd.none)
 
 -- Change the current ship when we right click
 update model@(Model {..}) (RClick pos) =
