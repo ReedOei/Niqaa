@@ -37,5 +37,5 @@ type YCenter = Double
 type Width = Double
 type Height = Double
 type Angle = Double
-data Rect = Rect XCenter YCenter Width Height Angle
+data Rect = Rect XCenter YCenter Width Height
 
