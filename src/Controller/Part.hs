@@ -124,7 +124,8 @@ instance Physics Part.Part where
                     Part.Hull -> self
                     gun@Part.Gun{..} ->
                         if timer + dt > timerGoal && timer < timerGoal then self {Part.stats = gun {Part.timer = timer + dt, Part.shotsLeft = salvoSize, Part.salvoTimer = 0} }
-                        else self {Part.stats = gun {Part.timer = timer + dt + rtime * multiplier, Part.salvoTimer = salvoTimer + dt + rtime * multiplier}}
+                        else if timer + dt > timerGoal then self {Part.stats = gun {Part.salvoTimer = salvoTimer + dt + rtime * multiplier}}
+                             else self {Part.stats = gun {Part.timer = timer + dt + rtime * multiplier, Part.salvoTimer = salvoTimer + dt + rtime * multiplier}}
 
 -- Shoots a shot from the specified ship at the specified position.
 shoot :: Model -> Part.Part -> V2 Double -> Model

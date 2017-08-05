@@ -37,7 +37,7 @@ instance Physics Shot.Shot where
         case checkCollisions shot parts of
             [] -> model
             collisions -> 
-                case find (\part -> Part.shipId part /= launchId) collisions of
+                case find (\part -> Part.factionId part /= factionId) collisions of
                     Just part -> let newPart = damage shotDamage part in
                         case Part.health newPart > 0 of
                             -- If it's still alive, just update it, which means we need to find the ship it comes from

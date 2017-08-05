@@ -13,6 +13,8 @@ import Linear.V2 (V2(V2))
 
 import Model.Main
 
+import Misc
+
 average :: Floating a => [a] -> a
 average xs = sum xs / (fromIntegral $ length xs)
 
@@ -24,11 +26,6 @@ v2Len (V2 x y) = sqrt $ x^2 + y^2
 
 normalize :: Floating a => V2 a -> V2 a
 normalize v = v / (pure $ v2Len v)
-
--- x and y are the position of the center
-inRect :: V2 Double -> Rect -> Bool
-inRect (V2 x1 y1) (Rect x2 y2 w h) = x1 `inRange` (x2 - w, x2 + w) && y1 `inRange` (y2 - h, y2 + h)
-    where inRange v (l, h) = v >= l && v <= h
 
 collide :: Rect -> Rect -> Bool
 collide (Rect x1 y1 w1 h1) (Rect x2 y2 w2 h2) = 

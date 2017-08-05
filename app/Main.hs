@@ -35,6 +35,8 @@ import qualified Controller.Part as Part
 import qualified Controller.Ship as Ship
 import qualified Controller.Shot as Shot
 
+import GUI.Main
+
 import Ships -- Contains ships definitions
 
 initial :: (Model, Cmd SDLEngine Action)
@@ -51,7 +53,12 @@ initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) Init
                 nShots = 1,
                 nParts = 1,
                 gen = mkStdGen 1,
-                worldSize = V2 world_width world_height
+                worldSize = V2 world_width world_height,
+                guiManager = GUIManager
+                             {
+                                guiElements = Map.empty,
+                                nElements = 1
+                             }
              }
 
 update :: Model -> Action -> (Model, Cmd SDLEngine Action)
