@@ -22,10 +22,8 @@ import qualified Model.Ship as Ship
 import Controller.Main
 import qualified Controller.Part as Part
 
-
 -- allShips = [pischki, kiraara, vijossk, videre, hija, davanja, jin, tiktok, blaqiiiiip]
 allShips = [tiktok, tiktok, pischki, blaqiiiiip, blaqiiiiip, blaqiiiiip, blaqiiiiip, blaqiiiiip]
-
 
 base :: Part.Part
 base = Part.Part
@@ -423,3 +421,4 @@ blaqiiiiip =
 
         ]
     )
+
