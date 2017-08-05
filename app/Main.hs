@@ -38,6 +38,7 @@ import qualified Controller.Shot as Shot
 import GUI.Main
 
 import Ships -- Contains ships definitions
+import GUI -- Contains GUI definitions
 
 initial :: (Model, Cmd SDLEngine Action)
 initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) InitRandom) -- Command is to set up the initial random generator.
@@ -54,11 +55,7 @@ initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) Init
                 nParts = 1,
                 gen = mkStdGen 1,
                 worldSize = V2 world_width world_height,
-                guiManager = GUIManager
-                             {
-                                guiElements = Map.empty,
-                                nElements = 1
-                             }
+                guiManager = buildMainGUI
              }
 
 update :: Model -> Action -> (Model, Cmd SDLEngine Action)
@@ -71,7 +68,11 @@ update model@(Model {..}) (RClick pos) =
         Nothing -> (model {currentShip = (-1)}, Cmd.none)
 
 -- Shoot a shot from our ship if we can at the place we clicked on
-update model@(Model {..}) (LClick pos) = update model (AddRandomShipPos pos allShips)
+update model@(Model {..}) (LClick pos) = 
+    case handleClick guiManager Mouse.LeftButton pos of
+        Just action -> update model action
+        Nothing -> (model, Cmd.none)
+-- = update model (AddRandomShipPos pos allShips)
 
 update model (Step dt) = (doStep dt $ Ship.checkDestroyed $ handlePhysics model, Cmd.none)
 update model None = (model, Cmd.none)
@@ -93,7 +94,7 @@ subscriptions = Sub.batch [Mouse.clicks handleClick,
           handleClick _ _ = None
 
 view :: Model -> Graphics SDLEngine
-view model@(Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) ++ map showShot (Map.elems shots))
+view model@(Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) ++ map showShot (Map.elems shots) ++ [showGUI guiManager])
     where showShip ship@Ship.Ship{Ship.color=color@(r,g,b), Ship.pos=V2 shipX _} =
                 group $ (map showPart $ Map.elems $ Part.getParts model ship) ++ [name]
                 -- we want it to be just slightly above the highest piece.

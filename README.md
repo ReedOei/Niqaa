@@ -16,6 +16,10 @@ If you are running Mac OS X with Homebrew installed, you can run:
 
 `brew install sdl2`
 
+You may also need to run
+
+`brew install pango`
+
 ~~~
 git clone https://github.com/Kytuzian/Niqaa
 cd Niqaa

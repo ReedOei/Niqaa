@@ -4,17 +4,24 @@
 module GUI.Main
     (
         GUIManager (..),
-        GUIElement (..)
+        GUIElement (..),
+        handleClick,
+        showGUI
     ) where
+
+import Helm
+import Helm.Color
+import Helm.Graphics2D
+
+import qualified Helm.Mouse as Mouse
+import qualified Helm.Graphics2D.Text as Text
+import qualified Helm.Keyboard as Keyboard
     
 import qualified Data.Map as Map
 import Data.Maybe (isJust)
 
 import Linear.V2 (V2(V2))
     
-import Helm
-import qualified Helm.Mouse as Mouse
-
 import Misc
 
 import Model.Action
@@ -26,18 +33,29 @@ data GUIElement = Button { buttonId :: Int,
                            buttonText :: String,
                            buttonPos :: V2 Double,
                            buttonSize :: V2 Double,
+                           buttonColor :: Color,
+                           textColor :: Color,
                            buttonAction :: V2 Double -> Action }
 
 instance Show GUIElement where
     show Button{..} = buttonText
 
-handleLClick :: GUIManager -> V2 Double -> Maybe Action
-handleLClick manager@GUIManager{guiElements} pos = 
-    case filter isJust $ map (handleClick Mouse.LeftButton pos) $ Map.elems guiElements of
+showGUI :: GUIManager -> Form e
+showGUI guiManager@GUIManager{..} = group $ map showGUIElement $ Map.elems guiElements
+
+showGUIElement :: GUIElement -> Form e
+showGUIElement Button{..} =
+    group $ [move buttonPos $ filled buttonColor $ rect buttonSize,
+             move buttonPos $ text $ Text.color textColor $ Text.toText buttonText]
+
+handleClick :: GUIManager -> Mouse.MouseButton -> V2 Double -> Maybe Action
+handleClick manager@GUIManager{guiElements} button pos = 
+    case filter isJust $ map (handleGUIClick button pos) $ Map.elems guiElements of
         (a@(Just _):_) -> a
         _ -> Nothing
 
-handleClick button pos self@Button{buttonPos = V2 sx sy, buttonSize=V2 w h, buttonAction}
+handleGUIClick :: Mouse.MouseButton -> V2 Double -> GUIElement -> Maybe Action
+handleGUIClick button pos self@Button{buttonPos = V2 sx sy, buttonSize=V2 w h, buttonAction}
     | pos `inRect` bounds = Just $ buttonAction pos 
     | otherwise = Nothing
     where bounds = Rect sx sy w h
