@@ -19,6 +19,8 @@ import Data.Ord (comparing)
 
 import Linear.V2 (V2(V2))
 
+import Helm.Color
+
 import Model.Main
 import qualified Model.Part as Part
 import qualified Model.Ship as Ship
@@ -40,7 +42,7 @@ makeGun health size stats = Part.Part
         Part.pos = V2 0 0,
         Part.vel = V2 0 0,
         Part.health = health,
-        Part.color = (1,1,1),
+        Part.color = rgb 1 1 1,
         Part.size = size,
         Part.factionId = -1,
         Part.stats = stats

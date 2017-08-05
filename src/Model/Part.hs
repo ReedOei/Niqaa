@@ -6,13 +6,15 @@ module Model.Part
 
 import Linear.V2 (V2(V2))
 
+import Helm.Color
+
 data Part = Part { id :: Int,
                    name :: String,
                    shipId :: Int,
                    pos :: V2 Double,
                    vel :: V2 Double,
                    health :: Double,
-                   color :: (Double, Double, Double),
+                   color :: Color,
                    size :: Double,
                    factionId :: Int,
                    stats :: Stats}

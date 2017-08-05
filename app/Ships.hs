@@ -11,9 +11,13 @@ module Ships
         allShips
     ) where
 
+import qualified Data.Map as Map
+
 import Linear.V2 (V2(V2))
 
 import System.Random
+
+import Helm.Color
 
 import Model.Main
 import qualified Model.Part as Part
@@ -22,8 +26,11 @@ import qualified Model.Ship as Ship
 import Controller.Main
 import qualified Controller.Part as Part
 
--- allShips = [pischki, kiraara, vijossk, videre, hija, davanja, jin, tiktok, blaqiiiiip]
-allShips = [tiktok, tiktok, pischki, blaqiiiiip, blaqiiiiip, blaqiiiiip, blaqiiiiip, blaqiiiiip]
+partDefinitions :: Map.Map String Part.Part
+partDefinitions = Map.empty
+
+allShips = [pischki, kiraara, vijossk, videre, hija, davanja, jin, tiktok, blaqiiiiip]
+--allShips = [tiktok, tiktok, pischki, blaqiiiiip, blaqiiiiip, blaqiiiiip, blaqiiiiip, blaqiiiiip]
 
 base :: Part.Part
 base = Part.Part
@@ -34,7 +41,7 @@ base = Part.Part
         Part.pos = V2 0 0,
         Part.vel = V2 0 0,
         Part.health = 50,
-        Part.color = (1,1,1),
+        Part.color = rgb 1 1 1,
         Part.size = 20,
         Part.factionId = -1,
         Part.stats = Part.Hull
@@ -48,7 +55,7 @@ miniBase = Part.Part
         Part.pos = V2 0 0,
         Part.vel = V2 0 0,
         Part.health = 15,
-        Part.color = (1,1,1),
+        Part.color = rgb 1 1 1,
         Part.size = 3,
         Part.factionId = -1,
         Part.stats = Part.Hull
@@ -62,7 +69,7 @@ mediBase = Part.Part
         Part.pos = V2 0 0,
         Part.vel = V2 0 0,
         Part.health = 20,
-        Part.color = (1,1,1),
+        Part.color = rgb 1 1 1,
         Part.size = 8,
         Part.factionId = -1,
         Part.stats = Part.Hull
@@ -184,24 +191,6 @@ slingShot = Part.makeGun 1 2 $ Part.Gun
         Part.salvoTimer = 0
     }
 
--- This is the byproduct of a very whimsical gunmaker.
-{-explosiveFrisbee = Part.makeGun 15 20 $ Part.Gun
-    {
-        Part.prec = floor $ rand (1,20),
-        Part.timerGoal = floor $ rand (1000, 10000),
-        Part.timer = 0,
-        Part.shotSize = 1.3,   -- per official explosive frisbee standards
-        Part.shotDamage = rand (2, 2.2),
-        Part.shotSpeed = 1.5,
-        Part.salvoSize = floor $ rand (1,3), -- one machine can only throw
-        Part.shotsLeft = 0,
-        Part.salvoTimerGoal = floor $ rand (20, 40),
-        Part.salvoTimer = 0
-    }
-          where rand range = do
-                  random <- randRange range
-                  return random-}
-
 pischki =
     (
         Ship.Ship
@@ -210,7 +199,7 @@ pischki =
             Ship.name = "Pischki",
             Ship.classType = "Cruiser",
             Ship.classAbb = "CA",
-            Ship.color = (1, 0.5, 0),
+            Ship.color = rgb 1 0.5 0,
             Ship.factionId = 6,
             Ship.pos = V2 700 400
         },
@@ -241,7 +230,7 @@ kiraara =
             Ship.name = "Kiraara",
             Ship.classType = "Destroyer",
             Ship.classAbb = "DD",
-            Ship.color = (1,0,0),
+            Ship.color = rgb 1 0 0,
             Ship.factionId = 1,
             Ship.pos = (V2 1500 200)
         },
@@ -264,7 +253,7 @@ vijossk =
             Ship.name = "Vijossk",
             Ship.classType = "Freighter",
             Ship.classAbb = "FT",
-            Ship.color = (0,0,1),
+            Ship.color = rgb 0 0 1,
             Ship.factionId = 2,
             Ship.pos = V2 600 100
         },
@@ -284,7 +273,7 @@ videre =
             Ship.name = "Videre",
             Ship.classType = "Escort",
             Ship.classAbb = "ECT",
-            Ship.color = (0,1,0),
+            Ship.color = rgb 0 1 0,
             Ship.factionId = 3,
             Ship.pos = V2 500 600
         },
@@ -305,7 +294,7 @@ hija =
             Ship.name = "Hija",
             Ship.classType = "Interceptor",
             Ship.classAbb = "INT",
-            Ship.color = (1,0,1),
+            Ship.color = rgb 1 0 1,
             Ship.factionId = 4,
             Ship.pos = V2 100 500
         },
@@ -325,7 +314,7 @@ davanja =
             Ship.name = "Davanja",
             Ship.classType = "Artillery",
             Ship.classAbb = "ART",
-            Ship.color = (0,1,1),
+            Ship.color = rgb 0 1 1,
             Ship.factionId = 5,
             Ship.pos = V2 1550 700
         },
@@ -343,7 +332,7 @@ jin =
             Ship.name = "Jin",
             Ship.classType = "Fighter",
             Ship.classAbb = "FTR",
-            Ship.color = (0.5, 0.5, 0),
+            Ship.color = rgb 0.5 0.5 0,
             Ship.factionId = 7,
             Ship.pos = V2 0 0
         },
@@ -362,7 +351,7 @@ tiktok =
             Ship.name = "Tiktok",
             Ship.classType = "Artillery",
             Ship.classAbb = "ART",
-            Ship.color = (0.8627, 0.078431, 0.23529),
+            Ship.color = rgb 0.8627 0.078431 0.23529,
             Ship.factionId = 8,
             Ship.pos = V2 0 0
         },
@@ -390,7 +379,7 @@ blaqiiiiip =
             Ship.name = "Blaqiiiiip",
             Ship.classType = "Destroyer",
             Ship.classAbb = "DD",
-            Ship.color = (1, 1, 0.4),
+            Ship.color = rgb 1 1 0.4,
             Ship.factionId = 9,
             Ship.pos = V2 0 0
         },

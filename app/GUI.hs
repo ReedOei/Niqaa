@@ -28,7 +28,7 @@ buildMainGUI = GUIManager
                     {
                         buttonId = 1,
                         buttonText = "Add Ship",
-                        buttonPos = V2 50 50,
+                        buttonPos = V2 80 50,
                         buttonSize = V2 100 25,
                         buttonColor = rgb 1 0.941 0.627,
                         textColor = rgb 0 0 0,

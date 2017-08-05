@@ -53,3 +53,4 @@ findAt pos ships = getId <$> (find ((pos `inRect`) . getBounds) $ map snd $ Map.
 
 checkDestroyed :: Model -> Model
 checkDestroyed model@(Model {..}) = model {ships = Map.filter (not . Map.null . Part.getParts model) ships}
+
