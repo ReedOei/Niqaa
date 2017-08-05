@@ -32,7 +32,7 @@ buildMainGUI = GUIManager
                         buttonSize = V2 100 25,
                         buttonColor = rgb 1 0.941 0.627,
                         textColor = rgb 0 0 0,
-                        buttonAction = const (AddRandomShip allShips)
+                        buttonAction = const AddRandomShip
                     }
                 )
             ]

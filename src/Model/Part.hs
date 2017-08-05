@@ -18,7 +18,7 @@ data Part = Part { id :: Int,
                    size :: Double,
                    factionId :: Int,
                    stats :: Stats}
-    deriving Show
+    deriving (Show, Read)
 
 data Stats = Hull | 
              Gun {
@@ -33,4 +33,4 @@ data Stats = Hull |
                 salvoTimerGoal :: Double,
                 salvoTimer :: Double
              }
-    deriving Show
+    deriving (Show, Read)

@@ -54,12 +54,14 @@ initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) Init
                 nShots = 1,
                 nParts = 1,
                 gen = mkStdGen 1,
+                shipPatterns = allShips,
                 worldSize = V2 world_width world_height,
                 guiManager = buildMainGUI
              }
 
 update :: Model -> Action -> (Model, Cmd SDLEngine Action)
-update model (InitRandom gen) = (model {gen = gen}, Cmd.none)
+update model (InitRandom gen) = (model {gen = gen}, Cmd.execute loadPatterns LoadPatterns)
+update model@Model{shipPatterns} (LoadPatterns patterns) = (model {shipPatterns = shipPatterns ++ patterns}, Cmd.none)
 
 -- Change the current ship when we right click
 update model@(Model {..}) (RClick pos) =
@@ -72,17 +74,16 @@ update model@(Model {..}) (LClick pos) =
     case handleClick guiManager Mouse.LeftButton pos of
         Just action -> update model action
         Nothing -> (model, Cmd.none)
--- = update model (AddRandomShipPos pos allShips)
 
 update model (Step dt) = (doStep dt $ Ship.checkDestroyed $ handlePhysics model, Cmd.none)
 update model None = (model, Cmd.none)
-update model (AddRandomShip patterns) = update (model {gen = newGen}) (AddShip (V2 x y) (patterns !! i))
-    where (i, newGen1) = randomR (0, length patterns - 1) $ gen model
+update model@Model{shipPatterns} AddRandomShip = update (model {gen = newGen}) (AddShip (V2 x y) (shipPatterns !! i))
+    where (i, newGen1) = randomR (0, length shipPatterns - 1) $ gen model
           (x, newGen2) = randomR (0, world_width) newGen1
           (y, newGen) = randomR (0, world_height) newGen2
 
-update model (AddRandomShipPos pos patterns) = update (model {gen = newGen}) (AddShip pos (patterns !! i))
-    where (i, newGen) = randomR (0, length patterns - 1) $ gen model
+update model@Model{shipPatterns} (AddRandomShipPos pos) = update (model {gen = newGen}) (AddShip pos (shipPatterns !! i))
+    where (i, newGen) = randomR (0, length shipPatterns - 1) $ gen model
 
 update model (AddShip pos (ship, pattern)) = (Part.buildShip model (ship {Ship.pos = pos}, pattern), Cmd.none)
 

@@ -1,17 +1,13 @@
+{-# LANGUAGE NamedFieldPuns #-}
+
 module Ships
     (
-        kiraara,
-        vijossk,
-        videre,
-        hija,
-        davanja,
-        pischki,
-        jin,
-        tiktok,
-        allShips
+        allShips,
+        loadPatterns
     ) where
 
 import qualified Data.Map as Map
+import Data.Maybe (fromJust)
 
 import Linear.V2 (V2(V2))
 
@@ -27,10 +23,35 @@ import Controller.Main
 import qualified Controller.Part as Part
 
 partDefinitions :: Map.Map String Part.Part
-partDefinitions = Map.empty
+partDefinitions = Map.fromList
+                  [
+                      ("base", base),
+                      ("miniBase", miniBase),
+                      ("mediBase", mediBase),
+                      ("gun", gun),
+                      ("gatlingGun", gatlingGun),
+                      ("howitzer", howitzer),
+                      ("broadSide", broadSide),
+                      ("machineGun", machineGun),
+                      ("megaLaser", megaLaser),
+                      ("bigBullet", bigBullet),
+                      ("slingShot", slingShot)
+                  ]
 
-allShips = [pischki, kiraara, vijossk, videre, hija, davanja, jin, tiktok, blaqiiiiip]
---allShips = [tiktok, tiktok, pischki, blaqiiiiip, blaqiiiiip, blaqiiiiip, blaqiiiiip, blaqiiiiip]
+type IntermediateItem = ((Direction, String), (String, String))
+type IntermediatePattern = (Ship.Ship, [IntermediateItem])
+
+loadPatterns :: IO [BuildPattern]
+loadPatterns = do
+    contents <- readFile "app/Ships.txt"
+    let (parts, intermediatePatterns) = read contents :: ([Part.Part], [IntermediatePattern])
+    let newParts = Map.fromList $ map (\part@Part.Part{Part.name} -> (name, part)) parts
+    let partDefs = Map.union newParts partDefinitions
+
+    return $ map (\(ship, items) -> (ship, map (go partDefs) items)) intermediatePatterns
+    where go partDefs ((dir, neighbor), (partName, newName)) = ((dir, neighbor), (fromJust $ Map.lookup partName partDefs, newName))
+    
+allShips = []
 
 base :: Part.Part
 base = Part.Part
@@ -191,223 +212,4 @@ slingShot = Part.makeGun 1 2 $ Part.Gun
         Part.salvoTimer = 0
     }
 
-pischki =
-    (
-        Ship.Ship
-        {
-            Ship.id = -1,
-            Ship.name = "Pischki",
-            Ship.classType = "Cruiser",
-            Ship.classAbb = "CA",
-            Ship.color = rgb 1 0.5 0,
-            Ship.factionId = 6,
-            Ship.pos = V2 700 400
-        },
-        [
-            ((U, "ship"), (base, "ship")),
-            ((L, "ship"), (base, "left1")),
-            ((L, "left1"), (base, "left2")),
-            ((R, "ship"), (base, "right1")),
-            ((R, "right1"), (base, "right2")),
-            ((U, "ship"), (base, "top")),
-            ((D, "ship"), (base, "bottom")),
-            ((L, "left2"), (gun, "leftPD")),
-            ((R, "right2"), (gun, "rightPD")),
-            ((U, "top"), (broadSide, "topBroadside")),
-            ((D, "bottom"), (broadSide, "bottomBroadside")),
-            ((L, "top"), (broadSide, "leftBroadside1")),
-            ((L, "bottom"), (broadSide, "leftBroadside2")),
-            ((R, "top"), (broadSide, "rightBroaside1")),
-            ((R, "bottom"), (broadSide, "rightBroaside2"))
-        ]
-    )
-
-kiraara =
-    (
-        Ship.Ship
-        {
-            Ship.id = -1,
-            Ship.name = "Kiraara",
-            Ship.classType = "Destroyer",
-            Ship.classAbb = "DD",
-            Ship.color = rgb 1 0 0,
-            Ship.factionId = 1,
-            Ship.pos = (V2 1500 200)
-        },
-        [
-            ((U, "ship"), (base, "ship")),
-            ((U, "ship"), (base, "top")),
-            ((D, "ship"), (base, "bottom")),
-            ((U, "top"), (gatlingGun, "gatlingGun")),
-            ((D, "bottom"), (gun, "tailGun")),
-            ((L, "ship"), (gun, "leftGun")),
-            ((R, "ship"), (gun, "rightGun"))
-        ]
-    )
-
-vijossk =
-    (
-        Ship.Ship
-        {
-            Ship.id = -1,
-            Ship.name = "Vijossk",
-            Ship.classType = "Freighter",
-            Ship.classAbb = "FT",
-            Ship.color = rgb 0 0 1,
-            Ship.factionId = 2,
-            Ship.pos = V2 600 100
-        },
-        [
-            ((U, "ship"), (base, "ship")),
-            ((U, "ship"), (base, "top")),
-            ((D, "ship"), (base, "bottom")),
-            ((D, "bottom"), (gun, "pointGun"))
-        ]
-    )
-
-videre =
-    (
-        Ship.Ship
-        {
-            Ship.id = -1,
-            Ship.name = "Videre",
-            Ship.classType = "Escort",
-            Ship.classAbb = "ECT",
-            Ship.color = rgb 0 1 0,
-            Ship.factionId = 3,
-            Ship.pos = V2 500 600
-        },
-        [
-            ((U, "ship"), (base, "ship")),
-            ((R, "ship"), (base, "starboard")),
-            ((L, "ship"), (base, "port")),
-            ((R, "starboard"), (gun, "rightGun")),
-            ((L, "port"), (gun, "leftGun"))
-        ]
-    )
-
-hija =
-    (
-        Ship.Ship
-        {
-            Ship.id = -1,
-            Ship.name = "Hija",
-            Ship.classType = "Interceptor",
-            Ship.classAbb = "INT",
-            Ship.color = rgb 1 0 1,
-            Ship.factionId = 4,
-            Ship.pos = V2 100 500
-        },
-        [
-            ((U, "ship"), (base, "ship")),
-            ((L, "ship"), (gun, "leftGun")),
-            ((R, "ship"), (gun, "rightGun")),
-            ((U, "ship"), (gun, "topGun"))
-        ]
-    )
-
-davanja =
-    (
-        Ship.Ship
-        {
-            Ship.id = -1,
-            Ship.name = "Davanja",
-            Ship.classType = "Artillery",
-            Ship.classAbb = "ART",
-            Ship.color = rgb 0 1 1,
-            Ship.factionId = 5,
-            Ship.pos = V2 1550 700
-        },
-        [
-            ((U, "ship"), (base, "ship")),
-            ((U, "ship"), (howitzer, "howitzer"))
-        ]
-    )
-
-jin =
-    (
-        Ship.Ship
-        {
-            Ship.id = -1,
-            Ship.name = "Jin",
-            Ship.classType = "Fighter",
-            Ship.classAbb = "FTR",
-            Ship.color = rgb 0.5 0.5 0,
-            Ship.factionId = 7,
-            Ship.pos = V2 0 0
-        },
-        [
-            ((U, "ship"), (base, "ship")),
-            ((R, "ship"), (megaLaser, "megaLaser")),
-            ((L, "ship"), (megaLaser, "megaLaser2"))
-        ]
-    )
-
-tiktok =
-    (
-        Ship.Ship
-        {
-            Ship.id = -1,
-            Ship.name = "Tiktok",
-            Ship.classType = "Artillery",
-            Ship.classAbb = "ART",
-            Ship.color = rgb 0.8627 0.078431 0.23529,
-            Ship.factionId = 8,
-            Ship.pos = V2 0 0
-        },
-        [
-            ((U, "ship"), (base, "ship")),
-            ((R, "ship"), (miniBase, "rightBow")),
-            ((R, "rightBow"), (megaLaser, "megaLaser")),
-            ((U, "megaLaser"), (megaLaser, "megaLaser2")),
-            ((U, "megaLaser2"), (megaLaser, "megaLaser3")),
-            ((U, "megaLaser3"), (megaLaser, "megaLaser4")),
-            ((L, "ship"), (miniBase, "leftBow")),
-            ((L, "leftBow"), (megaLaser, "megaLaser5")),
-            ((U, "megaLaser5"), (megaLaser, "megaLaser6")),
-            ((U, "megaLaser6"), (megaLaser, "megaLaser7")),
-            ((U, "megaLaser7"), (megaLaser, "megaLaser8"))
-        ]
-    )
-
-
-blaqiiiiip =
-    (
-        Ship.Ship
-        {
-            Ship.id = -1,
-            Ship.name = "Blaqiiiiip",
-            Ship.classType = "Destroyer",
-            Ship.classAbb = "DD",
-            Ship.color = rgb 1 1 0.4,
-            Ship.factionId = 9,
-            Ship.pos = V2 0 0
-        },
-        [
-            ((U, "ship"), (base, "ship")),
-
-            ((R, "ship"), (mediBase, "mediBaseR1")),
-            ((R, "mediBaseR1"), (mediBase, "mediBaseR2")),
-            ((R, "mediBaseR2"), (mediBase, "mediBaseR3")),
-            ((R, "mediBaseR3"), (mediBase, "mediBaseR4")),
-            ((R, "mediBaseR4"), (mediBase, "mediBaseR5")),
-            ((R, "mediBaseR5"), (mediBase, "mediBaseR6")),
-            ((U, "mediBaseR6"), (mediBase, "mediBaseRU")),
-            ((U, "mediBaseRU"), (machineGun, "machineGunR1")),
-            ((D, "mediBaseR6"), (mediBase, "mediBaseRD")),
-            ((D, "mediBaseRD"), (machineGun, "machineGunR2")),
-
-            ((L, "ship"), (mediBase, "mediBaseL1")),
-            ((L, "mediBaseL1"), (mediBase, "mediBaseL2")),
-            ((L, "mediBaseL2"), (mediBase, "mediBaseL3")),
-            ((L, "mediBaseL3"), (mediBase, "mediBaseL4")),
-            ((L, "mediBaseL4"), (mediBase, "mediBaseL5")),
-            ((L, "mediBaseL5"), (mediBase, "mediBaseL6")),
-            ((U, "mediBaseL6"), (mediBase, "mediBaseLU")),
-            ((U, "mediBaseLU"), (machineGun, "machineGunL1")),
-            ((D, "mediBaseL6"), (mediBase, "mediBaseLD")),
-            ((D, "mediBaseLD"), (machineGun, "machineGunL2"))
-
-        ]
-    )
 

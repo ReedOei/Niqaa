@@ -38,6 +38,7 @@ data Model = Model { currentShip :: Int, -- The id of the current ship
                      nParts :: Int,
                      worldSize :: V2 Double,
                      gen :: StdGen,
+                     shipPatterns :: [BuildPattern],
                      guiManager :: GUIManager}
     deriving Show
 

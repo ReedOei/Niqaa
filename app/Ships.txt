@@ -1,0 +1,206 @@
+(
+    [],
+    [
+        (
+            Ship
+            {
+                id = -1,
+                name = "Pischki",
+                classType = "Cruiser",
+                classAbb = "CA",
+                color = rgb 1 0.5 0,
+                factionId = 6,
+                pos = V2 700 400
+            },
+            [
+                ((U, "ship"), ("base", "ship")),
+                ((L, "ship"), ("base", "left1")),
+                ((L, "left1"), ("base", "left2")),
+                ((R, "ship"), ("base", "right1")),
+                ((R, "right1"), ("base", "right2")),
+                ((U, "ship"), ("base", "top")),
+                ((D, "ship"), ("base", "bottom")),
+                ((L, "left2"), ("gun", "leftPD")),
+                ((R, "right2"), ("gun", "rightPD")),
+                ((U, "top"), ("broadSide", "topBroadside")),
+                ((D, "bottom"), ("broadSide", "bottomBroadside")),
+                ((L, "top"), ("broadSide", "leftBroadside1")),
+                ((L, "bottom"), ("broadSide", "leftBroadside2")),
+                ((R, "top"), ("broadSide", "rightBroaside1")),
+                ((R, "bottom"), ("broadSide", "rightBroaside2"))
+            ]
+        ),
+        (
+            Ship
+            {
+                id = -1,
+                name = "Kiraara",
+                classType = "Destroyer",
+                classAbb = "DD",
+                color = rgb 1 0 0,
+                factionId = 1,
+                pos = (V2 1500 200)
+            },
+            [
+                ((U, "ship"), ("base", "ship")),
+                ((U, "ship"), ("base", "top")),
+                ((D, "ship"), ("base", "bottom")),
+                ((U, "top"), ("gatlingGun", "gatlingGun")),
+                ((D, "bottom"), ("gun", "tailGun")),
+                ((L, "ship"), ("gun", "leftGun")),
+                ((R, "ship"), ("gun", "rightGun"))
+            ]
+        ),
+        (
+            Ship
+            {
+                id = -1,
+                name = "Vijossk",
+                classType = "Freighter",
+                classAbb = "FT",
+                color = rgb 0 0 1,
+                factionId = 2,
+                pos = V2 600 100
+            },
+            [
+                ((U, "ship"), ("base", "ship")),
+                ((U, "ship"), ("base", "top")),
+                ((D, "ship"), ("base", "bottom")),
+                ((D, "bottom"), (gun, "pointGun"))
+            ]
+        ),
+        (
+            Ship
+            {
+                id = -1,
+                name = "Videre",
+                classType = "Escort",
+                classAbb = "ECT",
+                color = rgb 0 1 0,
+                factionId = 3,
+                pos = V2 500 600
+            },
+            [
+                ((U, "ship"), ("base", "ship")),
+                ((R, "ship"), ("base", "starboard")),
+                ((L, "ship"), ("base", "port")),
+                ((R, "starboard"), (gun, "rightGun")),
+                ((L, "port"), (gun, "leftGun"))
+            ]
+        ),
+        (
+            Ship
+            {
+                id = -1,
+                name = "Hija",
+                classType = "Interceptor",
+                classAbb = "INT",
+                color = rgb 1 0 1,
+                factionId = 4,
+                pos = V2 100 500
+            },
+            [
+                ((U, "ship"), ("base", "ship")),
+                ((L, "ship"), (gun, "leftGun")),
+                ((R, "ship"), (gun, "rightGun")),
+                ((U, "ship"), (gun, "topGun"))
+            ]
+        ),
+        (
+            Ship
+            {
+                id = -1,
+                name = "Davanja",
+                classType = "Artillery",
+                classAbb = "ART",
+                color = rgb 0 1 1,
+                factionId = 5,
+                pos = V2 1550 700
+            },
+            [
+                ((U, "ship"), ("base", "ship")),
+                ((U, "ship"), (howitzer, "howitzer"))
+            ]
+        ),
+        (
+            Ship
+            {
+                id = -1,
+                name = "Jin",
+                classType = "Fighter",
+                classAbb = "FTR",
+                color = rgb 0.5 0.5 0,
+                factionId = 7,
+                pos = V2 0 0
+            },
+            [
+                ((U, "ship"), ("base", "ship")),
+                ((R, "ship"), (megaLaser, "megaLaser")),
+                ((L, "ship"), (megaLaser, "megaLaser2"))
+            ]
+        ),
+        (
+            Ship
+            {
+                id = -1,
+                name = "Tiktok",
+                classType = "Artillery",
+                classAbb = "ART",
+                color = rgb 0.8627 0.078431 0.23529,
+                factionId = 8,
+                pos = V2 0 0
+            },
+            [
+                ((U, "ship"), ("base", "ship")),
+                ((R, "ship"), (miniBase, "rightBow")),
+                ((R, "rightBow"), (megaLaser, "megaLaser")),
+                ((U, "megaLaser"), (megaLaser, "megaLaser2")),
+                ((U, "megaLaser2"), (megaLaser, "megaLaser3")),
+                ((U, "megaLaser3"), (megaLaser, "megaLaser4")),
+                ((L, "ship"), (miniBase, "leftBow")),
+                ((L, "leftBow"), (megaLaser, "megaLaser5")),
+                ((U, "megaLaser5"), (megaLaser, "megaLaser6")),
+                ((U, "megaLaser6"), (megaLaser, "megaLaser7")),
+                ((U, "megaLaser7"), (megaLaser, "megaLaser8"))
+            ]
+        ),
+        (
+            Ship
+            {
+                id = -1,
+                name = "Blaqiiiiip",
+                classType = "Destroyer",
+                classAbb = "DD",
+                color = rgb 1 1 0.4,
+                factionId = 9,
+                pos = V2 0 0
+            },
+            [
+                ((U, "ship"), (base, "ship")),
+
+                ((R, "ship"), (mediBase, "mediBaseR1")),
+                ((R, "mediBaseR1"), (mediBase, "mediBaseR2")),
+                ((R, "mediBaseR2"), (mediBase, "mediBaseR3")),
+                ((R, "mediBaseR3"), (mediBase, "mediBaseR4")),
+                ((R, "mediBaseR4"), (mediBase, "mediBaseR5")),
+                ((R, "mediBaseR5"), (mediBase, "mediBaseR6")),
+                ((U, "mediBaseR6"), (mediBase, "mediBaseRU")),
+                ((U, "mediBaseRU"), (machineGun, "machineGunR1")),
+                ((D, "mediBaseR6"), (mediBase, "mediBaseRD")),
+                ((D, "mediBaseRD"), (machineGun, "machineGunR2")),
+
+                ((L, "ship"), (mediBase, "mediBaseL1")),
+                ((L, "mediBaseL1"), (mediBase, "mediBaseL2")),
+                ((L, "mediBaseL2"), (mediBase, "mediBaseL3")),
+                ((L, "mediBaseL3"), (mediBase, "mediBaseL4")),
+                ((L, "mediBaseL4"), (mediBase, "mediBaseL5")),
+                ((L, "mediBaseL5"), (mediBase, "mediBaseL6")),
+                ((U, "mediBaseL6"), (mediBase, "mediBaseLU")),
+                ((U, "mediBaseLU"), (machineGun, "machineGunL1")),
+                ((D, "mediBaseL6"), (mediBase, "mediBaseLD")),
+                ((D, "mediBaseLD"), (machineGun, "machineGunL2"))
+
+            ]
+        )
+    ]
+)

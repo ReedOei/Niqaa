@@ -14,7 +14,7 @@ import qualified Model.Part as Part
 import qualified Model.Ship as Ship
 
 data Direction = U | D | L | R
-    deriving (Eq, Show)
+    deriving (Eq, Show, Read)
 
 -- Patterns for building ships
 type BuildItem = ((Direction, String), (Part.Part, String))
@@ -25,9 +25,9 @@ data Action = LClick (V2 Double) |
               None | 
               Step Double |
               InitRandom StdGen |
-              AddRandomShip [BuildPattern] |
-              AddShipRandomPos BuildPattern |
-              AddRandomShipPos (V2 Double) [BuildPattern] |
+              LoadPatterns [BuildPattern] |
+              AddRandomShip |
+              AddRandomShipPos (V2 Double) |
               AddShip (V2 Double) BuildPattern
     deriving Show
 
