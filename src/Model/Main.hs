@@ -33,7 +33,7 @@ data Model = Model { currentShip :: Int, -- The id of the current ship
                      ships :: Map.Map Int Ship.Ship,
                      shots :: Map.Map Int Shot.Shot,
                      parts :: Map.Map Int Part.Part,
-                     nShips :: Int, 
+                     nShips :: Int,
                      nShots :: Int,
                      nParts :: Int,
                      worldSize :: V2 Double,
@@ -45,7 +45,5 @@ data Faction = Faction { factionId :: Int,
                          factioNName :: String}
     deriving Show
 
-
 gameFPS :: Int
 gameFPS = 60
-

@@ -31,5 +31,11 @@ data Action = LClick (V2 Double) |
               AddShip (V2 Double) BuildPattern
     deriving Show
 
-data Rect = Rect Double Double Double Double
+-- X position of the center, Y position of the center, Width, Height, Angle
+type XCenter = Double
+type YCenter = Double
+type Width = Double
+type Height = Double
+type Angle = Double
+data Rect = Rect XCenter YCenter Width Height Angle
 
