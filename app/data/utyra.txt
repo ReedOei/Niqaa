@@ -1,0 +1,43 @@
+(
+    Ship
+    {
+        id = -1,
+        name = "Utyra",
+        classType = "Defense Statioin",
+        classAbb = "DFS",
+        color = Color 0 1 1 1,
+        factionId = 5,
+        pos = V2 1550 700
+    },
+    [
+        ((U, "ship"), ("base", "ship")),
+
+        ((U, "ship"), ("miniBase", "top arm 1")),
+        ((U, "top arm 1"), ("miniBase", "top arm 2")),
+        ((U, "top arm 2"), ("miniBase", "top arm 3")),
+        ((U, "top arm 3"), ("mass driver", "top mass driver")),
+        ((U, "top mass driver"), ("shield", "top shield")),
+
+        ((D, "ship"), ("miniBase", "bottom arm 1")),
+        ((D, "bottom arm 1"), ("miniBase", "bottom arm 2")),
+        ((D, "bottom arm 2"), ("miniBase", "bottom arm 3")),
+        ((D, "bottom arm 3"), ("mass driver", "bottom mass driver")),
+        ((D, "bottom mass driver"), ("shield", "bottom shield")),
+
+        ((L, "bottom shield"), ("shield", "bottom shield l1")),
+        ((L, "bottom shield l1"), ("shield", "bottom shield l2")),
+        ((R, "bottom shield"), ("shield", "bottom shield r1")),
+        ((R, "bottom shield r1"), ("shield", "bottom shield r2")),
+
+        ((L, "top shield"), ("shield", "top shield l1")),
+        ((L, "top shield l1"), ("shield", "top shield l2")),
+        ((R, "top shield"), ("shield", "top shield r1")),
+        ((R, "top shield r1"), ("shield", "top shield r2")),
+
+        ((U, "bottom shield r2"), ("shield", "shield r1")),
+        ((U, "bottom shield l2"), ("shield", "shield l1")),
+        ((D, "top shield r2"), ("shield", "shield r2")),
+        ((D, "top shield l2"), ("shield", "shield l2"))
+    ]
+)
+

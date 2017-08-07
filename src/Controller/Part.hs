@@ -9,7 +9,8 @@ module Controller.Part
         canShoot, resetGun,
         getFarthest,
         getParts, getPartsById,
-        buildShip
+        buildShip,
+        checkDestroyed
     ) where
 
 import Data.List (find)
@@ -116,18 +117,37 @@ instance Physics Part.Part where
               target = enemies !! n
               targetParts = Map.elems $ getParts inModel target
               targetPart = targetParts !! pid
+
+              -- Generate random numbers like this so it remains pure
               (rtime, newGen1) = randomR (0, 1) $ gen inModel
               (n, newGen2) = randomR (0, length enemies - 1) newGen1
               (pid, newGen) = randomR (0, length targetParts - 1) newGen2
+            
+              -- This multiplier exists so that not all guns reload at exactly the same rate.
               multiplier = 1 / fromIntegral gameFPS
               model = inModel {parts = updatePhysics inParts newSelf, gen = if null enemies then newGen1 else newGen}
               newSelf =
                 case stats of
                     Part.Hull -> self
+
                     gun@Part.Gun{..} ->
-                        if timer + dt > timerGoal && timer < timerGoal then self {Part.stats = gun {Part.timer = timer + dt, Part.shotsLeft = salvoSize, Part.salvoTimer = 0} }
-                        else if timer + dt > timerGoal then self {Part.stats = gun {Part.salvoTimer = salvoTimer + dt + rtime * multiplier}}
-                             else self {Part.stats = gun {Part.timer = timer + dt + rtime * multiplier, Part.salvoTimer = salvoTimer + dt + rtime * multiplier}}
+                        if timer + dt > timerGoal && timer < timerGoal then 
+                            self {Part.stats = gun {Part.timer = timer + dt, Part.shotsLeft = salvoSize, Part.salvoTimer = 0} }
+                        else if timer + dt > timerGoal then -- Don't increase both the timer
+                            self {Part.stats = gun {Part.salvoTimer = salvoTimer + dt + rtime * multiplier}}
+                        else 
+                            self {Part.stats = gun {Part.timer = timer + dt + rtime * multiplier, Part.salvoTimer = salvoTimer + dt + rtime * multiplier}}
+
+                    shield@Part.Shield{..} -> 
+                        let newShield = shield {Part.strength = max (strength + dt * rechargeRate) maxStrength} in 
+                        
+                        if shieldFlashing then
+                            if shieldFlashCurrent > shieldFlashSize then
+                                self {Part.stats = newShield {Part.shieldFlashCurrent = 0, Part.shieldFlashing = False}}
+                            else
+                                self {Part.stats = newShield {Part.shieldFlashCurrent = shieldFlashCurrent + dt * shieldFlashSpeed}}
+                        else
+                            self {Part.stats = newShield}
 
 -- Shoots a shot from the specified ship at the specified position.
 shoot :: Model -> Part.Part -> V2 Double -> Model
@@ -141,3 +161,8 @@ shoot model@(Model {..}) self@Part.Part{Part.stats=Part.Gun{..}, Part.color} tar
             where vel = (fromAngle $ angle perfect + miss * prec) * pure shotSpeed
                     where perfect = normalize (targetPos - Part.pos self)
 shoot model _ _ = model -- If not a gun, we obviously can't shoot anything.
+
+checkDestroyed :: Model -> Model
+checkDestroyed model@Model{..} = model { parts = Map.filter ((> 0) . Part.health) parts }
+
+

@@ -45,6 +45,9 @@ instance Physics Ship.Ship where
 
     handleStep dt model self@Ship.Ship{..} = model
 
+checkDestroyed :: Model -> Model
+checkDestroyed model@(Model {..}) = model {ships = Map.filter (not . Map.null . Part.getParts model) ships}
+
 getShipSize :: Model -> Ship.Ship -> Rect
 getShipSize model ship = undefined
 
@@ -53,7 +56,4 @@ getCurrent (Model {..}) = Map.lookup currentShip ships
 
 findAt :: V2 Double -> Map.Map k Ship.Ship -> Maybe Int
 findAt pos ships = getId <$> (find ((pos `inRect`) . getBounds) $ map snd $ Map.toList ships)
-
-checkDestroyed :: Model -> Model
-checkDestroyed model@(Model {..}) = model {ships = Map.filter (not . Map.null . Part.getParts model) ships}
 

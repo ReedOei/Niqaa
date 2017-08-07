@@ -32,5 +32,16 @@ data Stats = Hull |
                 shotsLeft :: Int,
                 salvoTimerGoal :: Double,
                 salvoTimer :: Double
+             } |
+             Shield {
+                maxStrength :: Double,
+                strength :: Double,
+                rechargeRate :: Double, -- Recharges this much per second.
+
+                -- Shield flash makes the shield visually expand out from itself when hit.
+                shieldFlashing :: Bool,
+                shieldFlashSize :: Double,
+                shieldFlashSpeed :: Double, -- How much it expands per second
+                shieldFlashCurrent :: Double
              }
     deriving (Show, Read)

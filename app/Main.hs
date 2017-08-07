@@ -78,7 +78,7 @@ update model@(Model {..}) (LClick pos) =
         Just action -> update model action
         Nothing -> (model, Cmd.none)
 
-update model (Step milliseconds) = (doStep dt $ Ship.checkDestroyed $ handlePhysics dt model, Cmd.none)
+update model (Step milliseconds) = (doStep dt $ checkDestroyed $ handlePhysics dt model, Cmd.none)
     where dt = milliseconds / 1000
 
 update model None = (model, Cmd.none)
@@ -108,7 +108,10 @@ view model@(Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) +
                                 Just part@Part.Part{Part.pos = V2 _ partY} ->
                                     move (V2 shipX (partY - Part.size part / 2 - 10)) $ text $ Text.height 12 $ Text.color color $ Text.toText $ Ship.name ship
                                 Nothing -> text $ Text.toText ""
-          showPart (Part.Part {..}) = move pos $ filled color $ square size
+          showPart (Part.Part {..}) = 
+            move pos $ filled color $ case stats of
+                Part.Shield{..} -> square $ size + shieldFlashCurrent 
+                _ -> square size
           showShot (Shot.Shot {..}) = move pos $ filled shotColor $ square size
 
 main :: IO ()
