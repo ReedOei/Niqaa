@@ -28,6 +28,13 @@ stack build
 stack exec Niqaa
 ~~~
 
+# Data Files
+
+The game runs off of data files which are stored in the app/data/ directory.
+You can write your own and the game will read them if you do it properly.
+Just follow the pattern of the files that are already there.
+If you would like to submit any of your creations, just let me know.
+
 # Contributors
 - Reed Oei
 - Meg O'Brien

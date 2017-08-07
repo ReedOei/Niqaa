@@ -109,9 +109,16 @@ view model@(Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) +
                                     move (V2 shipX (partY - Part.size part / 2 - 10)) $ text $ Text.height 12 $ Text.color color $ Text.toText $ Ship.name ship
                                 Nothing -> text $ Text.toText ""
           showPart (Part.Part {..}) = 
-            move pos $ filled color $ case stats of
-                Part.Shield{..} -> square $ size + shieldFlashCurrent 
-                _ -> square size
+            case stats of
+                Part.Shield{..} -> 
+                    if strength > 1 then 
+                        group [move pos $ filled color $ square size, 
+                               move pos $ filled shieldColor $ circle (shieldSize * strength / maxStrength)]
+                    else move pos $ filled color $ square size
+                _ -> move pos $ filled color $ square size
+
+            where (Color r g b a) = color
+                  shieldColor = Color r g b (a / 3)
           showShot (Shot.Shot {..}) = move pos $ filled shotColor $ square size
 
 main :: IO ()

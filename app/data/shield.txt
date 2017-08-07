@@ -13,7 +13,8 @@ Part
     {
         maxStrength = 40,
         strength = 40,
-        rechargeRate = 4,
+        rechargeRate = 0.5,
+        shieldSize = 50,
         shieldFlashing = False,
         shieldFlashSize = 3,
         shieldFlashSpeed = 6,

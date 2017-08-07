@@ -12,7 +12,7 @@ Part
     stats = Gun
     {
         prec = 0.8,
-        timerGoal = 15,
+        timerGoal = 20,
         timer = 0,
         shotSize = 6,
         shotDamage = 100,

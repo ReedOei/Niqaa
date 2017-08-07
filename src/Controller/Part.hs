@@ -100,6 +100,10 @@ place L part model neighbor@Part.Part{Part.pos} = add (pos + V2 (-Part.size part
 
 instance Physics Part.Part where
     getId = Part.id
+
+    getBounds Part.Part{Part.pos = V2 x y, Part.stats = Part.Shield {..}} = 
+        Circle x y (shieldSize * strength / maxStrength)
+
     getBounds (Part.Part {Part.pos = V2 x y, Part.size}) = Rect x y size size
 
     doMove dt part@Part.Part{Part.pos, Part.vel} = part {Part.pos = pos + vel * pure dt}
@@ -139,7 +143,7 @@ instance Physics Part.Part where
                             self {Part.stats = gun {Part.timer = timer + dt + rtime * multiplier, Part.salvoTimer = salvoTimer + dt + rtime * multiplier}}
 
                     shield@Part.Shield{..} -> 
-                        let newShield = shield {Part.strength = max (strength + dt * rechargeRate) maxStrength} in 
+                        let newShield = shield {Part.strength = min (strength + dt * rechargeRate) maxStrength} in 
                         
                         if shieldFlashing then
                             if shieldFlashCurrent > shieldFlashSize then

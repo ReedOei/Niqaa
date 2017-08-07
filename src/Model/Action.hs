@@ -2,7 +2,7 @@ module Model.Action
     (
         Action (..),
         Direction (..),
-        Rect (..),
+        Shape (..),
         BuildItem, BuildPattern
     ) where
 
@@ -33,11 +33,14 @@ data Action = LClick (V2 Double) |
               AddShip (V2 Double) BuildPattern
     deriving Show
 
--- X position of the center, Y position of the center, Width, Height, Angle
 type XCenter = Double
 type YCenter = Double
 type Width = Double
 type Height = Double
 type Angle = Double
-data Rect = Rect XCenter YCenter Width Height
+type Radius = Double
+
+data Shape = Rect XCenter YCenter Width Height |
+             Circle XCenter YCenter Radius
+
 

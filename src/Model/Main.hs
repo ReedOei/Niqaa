@@ -3,7 +3,7 @@ module Model.Main
         Action (..),
         Model (..),
         Faction (..),
-        Rect (..),
+        Shape (..),
         Direction (..),
         BuildItem, BuildPattern,
         world_width, world_height,

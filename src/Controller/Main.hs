@@ -15,6 +15,8 @@ import Model.Main
 
 import Misc
 
+import System.IO.Unsafe
+
 average :: Floating a => [a] -> a
 average xs = sum xs / (fromIntegral $ length xs)
 
@@ -27,7 +29,17 @@ v2Len (V2 x y) = sqrt $ x^2 + y^2
 normalize :: Floating a => V2 a -> V2 a
 normalize v = v / (pure $ v2Len v)
 
-collide :: Rect -> Rect -> Bool
+collide :: Shape -> Shape -> Bool
+collide (Circle x1 y1 r1) (Circle x2 y2 r2) = 
+    (x1 - x2)^2 + (y1 - y2)^2 <= r1^2 + r2^2
+
+collide r@(Rect _ _ _ _) c@(Circle _ _ _) = collide c r
+collide (Circle x1 y1 r) (Rect x2 y2 w h) =
+    (closestX - x1)^2 + (closestY - y1)^2 <= r^2
+
+    where closestX = clamp x1 (x2 - w / 2) (x2 + w / 2)
+          closestY = clamp y1 (y2 - h / 2) (y2 + h / 2)
+
 collide (Rect x1 y1 w1 h1) (Rect x2 y2 w2 h2) =
     x1 - w1 / 2 <= x2 + w2 / 2 &&
     x1 + w1 / 2 >= x2 - w2 / 2 &&
@@ -54,7 +66,7 @@ class Physics o where
     doMove :: Double -> o -> o
     handleMove :: Double -> Model -> o -> Model
 
-    getBounds :: o -> Rect
+    getBounds :: o -> Shape
 
     handleCollisions :: Model -> o -> Model
 

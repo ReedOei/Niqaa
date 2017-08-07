@@ -36,7 +36,9 @@ data Stats = Hull |
              Shield {
                 maxStrength :: Double,
                 strength :: Double,
-                rechargeRate :: Double, -- Recharges this much per second.
+                rechargeRate :: Double, -- Recharges this much strength per second.
+                
+                shieldSize :: Double, -- The radius of the shield. The shield gets smaller as it's strength is decreased.
 
                 -- Shield flash makes the shield visually expand out from itself when hit.
                 shieldFlashing :: Bool,

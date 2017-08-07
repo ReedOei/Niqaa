@@ -48,9 +48,6 @@ instance Physics Ship.Ship where
 checkDestroyed :: Model -> Model
 checkDestroyed model@(Model {..}) = model {ships = Map.filter (not . Map.null . Part.getParts model) ships}
 
-getShipSize :: Model -> Ship.Ship -> Rect
-getShipSize model ship = undefined
-
 getCurrent :: Model -> Maybe Ship.Ship
 getCurrent (Model {..}) = Map.lookup currentShip ships
 

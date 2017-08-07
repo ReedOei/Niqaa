@@ -24,20 +24,20 @@
         ((D, "bottom arm 3"), ("mass driver", "bottom mass driver")),
         ((D, "bottom mass driver"), ("shield", "bottom shield")),
 
-        ((L, "bottom shield"), ("shield", "bottom shield l1")),
-        ((L, "bottom shield l1"), ("shield", "bottom shield l2")),
-        ((R, "bottom shield"), ("shield", "bottom shield r1")),
-        ((R, "bottom shield r1"), ("shield", "bottom shield r2")),
+        ((L, "bottom shield"), ("base", "bottom armor l1")),
+        ((L, "bottom armor l1"), ("base", "bottom armor l2")),
+        ((R, "bottom shield"), ("base", "bottom armor r1")),
+        ((R, "bottom armor r1"), ("base", "bottom armor r2")),
 
-        ((L, "top shield"), ("shield", "top shield l1")),
-        ((L, "top shield l1"), ("shield", "top shield l2")),
-        ((R, "top shield"), ("shield", "top shield r1")),
-        ((R, "top shield r1"), ("shield", "top shield r2")),
+        ((L, "top shield"), ("base", "top armor l1")),
+        ((L, "top armor l1"), ("base", "top armor l2")),
+        ((R, "top shield"), ("base", "top armor r1")),
+        ((R, "top armor r1"), ("base", "top armor r2")),
 
-        ((U, "bottom shield r2"), ("shield", "shield r1")),
-        ((U, "bottom shield l2"), ("shield", "shield l1")),
-        ((D, "top shield r2"), ("shield", "shield r2")),
-        ((D, "top shield l2"), ("shield", "shield l2"))
+        ((U, "bottom armor r2"), ("base", "armor r1")),
+        ((U, "bottom armor l2"), ("base", "armor l1")),
+        ((D, "top armor r2"), ("base", "armor r2")),
+        ((D, "top armor l2"), ("base", "armor l2"))
     ]
 )
 
