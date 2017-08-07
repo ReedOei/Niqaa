@@ -29,9 +29,9 @@ instance Physics Shot.Shot where
     getId = Shot.id
     getBounds (Shot.Shot {Shot.pos = V2 x y, Shot.size}) = Rect x y size size
 
-    doMove shot@(Shot.Shot {..}) = shot {Shot.pos = pos + vel}
-    handleMove model@(Model {..}) shot@(Shot.Shot {Shot.id}) = 
-        model {shots = Map.insert id (doMove shot) shots}
+    doMove dt shot@(Shot.Shot {..}) = shot {Shot.pos = pos + vel * pure dt}
+    handleMove dt model@(Model {..}) shot@(Shot.Shot {Shot.id}) = 
+        model {shots = Map.insert id (doMove dt shot) shots}
 
     handleCollisions model@(Model {..}) shot@(Shot.Shot {..}) = 
         case checkCollisions shot parts of

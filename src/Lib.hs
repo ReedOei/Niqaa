@@ -13,11 +13,11 @@ import qualified Controller.Shot as Shot
 import qualified Controller.Ship as Ship
 
 -- Do basic physics stuff like move and check collisions
-handlePhysics :: Model -> Model
-handlePhysics model = afterShips
-    where afterShots = Map.foldl doPhysics model $ shots model
-          afterParts = Map.foldl doPhysics afterShots $ parts afterShots
-          afterShips = Map.foldl doPhysics afterParts $ ships afterParts
+handlePhysics :: Double -> Model -> Model
+handlePhysics dt model = afterShips
+    where afterShots = Map.foldl (doPhysics dt) model $ shots model
+          afterParts = Map.foldl (doPhysics dt) afterShots $ parts afterShots
+          afterShips = Map.foldl (doPhysics dt) afterParts $ ships afterParts
 
 -- Do all the stuff that relies on the timestamp/being repeated.
 doStep :: Double -> Model -> Model

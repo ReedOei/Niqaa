@@ -21,6 +21,7 @@ import qualified Helm.Time as Time
 import qualified Data.Map as Map
 
 import System.Random
+import System.IO.Unsafe
 
 -- All of the types and actual game functions are defined in here/sub libraries.
 import Lib
@@ -77,7 +78,9 @@ update model@(Model {..}) (LClick pos) =
         Just action -> update model action
         Nothing -> (model, Cmd.none)
 
-update model (Step dt) = (doStep dt $ Ship.checkDestroyed $ handlePhysics model, Cmd.none)
+update model (Step milliseconds) = (doStep dt $ Ship.checkDestroyed $ handlePhysics dt model, Cmd.none)
+    where dt = milliseconds / 1000
+
 update model None = (model, Cmd.none)
 update model@Model{shipPatterns} AddRandomShip = update (model {gen = newGen}) (AddShip (V2 x y) (shipPatterns !! i))
     where (i, newGen1) = randomR (0, length shipPatterns - 1) $ gen model

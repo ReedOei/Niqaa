@@ -51,8 +51,8 @@ getDirection (V2 x1 y1) (V2 x2 y2)
 class Physics o where
     getId :: o -> Int
 
-    doMove :: o -> o
-    handleMove :: Model -> o -> Model
+    doMove :: Double -> o -> o
+    handleMove :: Double -> Model -> o -> Model
 
     getBounds :: o -> Rect
 
@@ -66,8 +66,9 @@ class Physics o where
     collided :: Physics a => o -> a -> Bool
     collided a b = collide (getBounds a) (getBounds b)
 
-    doPhysics :: Model -> o -> Model
-    doPhysics model self = handleCollisions (handleMove model self) (doMove self)
+    doPhysics :: Double -> Model -> o -> Model
+    doPhysics dt model self = handleCollisions (handleMove dt model self) (doMove dt self)
 
 updatePhysics :: Physics a => Map.Map Int a -> a -> Map.Map Int a
 updatePhysics m self = Map.insert (getId self) self m
+

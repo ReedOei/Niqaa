@@ -101,9 +101,9 @@ instance Physics Part.Part where
     getId = Part.id
     getBounds (Part.Part {Part.pos = V2 x y, Part.size}) = Rect x y size size
 
-    doMove part@Part.Part{Part.pos, Part.vel} = part {Part.pos = pos + vel}
-    handleMove model@(Model {..}) part =
-        model {parts = Map.insert (Part.id part) (doMove part) parts}
+    doMove dt part@Part.Part{Part.pos, Part.vel} = part {Part.pos = pos + vel * pure dt}
+    handleMove dt model@(Model {..}) part =
+        model {parts = Map.insert (Part.id part) (doMove dt part) parts}
 
     handleCollisions model@(Model {..}) self = model
 
@@ -119,7 +119,7 @@ instance Physics Part.Part where
               (rtime, newGen1) = randomR (0, 1) $ gen inModel
               (n, newGen2) = randomR (0, length enemies - 1) newGen1
               (pid, newGen) = randomR (0, length targetParts - 1) newGen2
-              multiplier = 1000 / fromIntegral gameFPS
+              multiplier = 1 / fromIntegral gameFPS
               model = inModel {parts = updatePhysics inParts newSelf, gen = if null enemies then newGen1 else newGen}
               newSelf =
                 case stats of

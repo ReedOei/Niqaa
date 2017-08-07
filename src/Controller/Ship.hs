@@ -30,9 +30,9 @@ instance Physics Ship.Ship where
     getId = Ship.id
     getBounds (Ship.Ship {Ship.pos = V2 x y}) = Rect x y 0 0
 
-    doMove = id -- We do the actual moving in handleMove
+    doMove dt = id -- We do the actual moving in handleMove
 
-    handleMove model@(Model {..}) ship =
+    handleMove _ model@(Model {..}) ship =
         model {ships = Map.insert (Ship.id ship) newShip ships}
         where newShip =
               -- We don't want to get the average of our ship parts if there aren't any because then we'll divide by 0.
