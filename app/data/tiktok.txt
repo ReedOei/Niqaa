@@ -1,0 +1,26 @@
+(
+    Ship
+    {
+        id = -1,
+        name = "Tiktok",
+        classType = "Artillery",
+        classAbb = "ART",
+        color = Color 0.8627 0.078431 0.23529 1,
+        factionId = 8,
+        pos = V2 0 0
+    },
+    [
+        ((U, "ship"), ("base", "ship")),
+        ((R, "ship"), ("miniBase", "rightBow")),
+        ((R, "rightBow"), ("megaLaser", "megaLaser")),
+        ((U, "megaLaser"), ("megaLaser", "megaLaser2")),
+        ((U, "megaLaser2"), ("megaLaser", "megaLaser3")),
+        ((U, "megaLaser3"), ("megaLaser", "megaLaser4")),
+        ((L, "ship"), ("miniBase", "leftBow")),
+        ((L, "leftBow"), ("megaLaser", "megaLaser5")),
+        ((U, "megaLaser5"), ("megaLaser", "megaLaser6")),
+        ((U, "megaLaser6"), ("megaLaser", "megaLaser7")),
+        ((U, "megaLaser7"), ("megaLaser", "megaLaser8"))
+    ]
+)
+

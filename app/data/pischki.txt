@@ -1,0 +1,30 @@
+(
+    Ship
+    {
+        id = -1,
+        name = "Pischki",
+        classType = "Cruiser",
+        classAbb = "CA",
+        color = Color 1 0.5 0 1,
+        factionId = 6,
+        pos = V2 700 400
+    },
+    [
+        ((U, "ship"), ("base", "ship")),
+        ((L, "ship"), ("base", "left1")),
+        ((L, "left1"), ("base", "left2")),
+        ((R, "ship"), ("base", "right1")),
+        ((R, "right1"), ("base", "right2")),
+        ((U, "ship"), ("base", "top")),
+        ((D, "ship"), ("base", "bottom")),
+        ((L, "left2"), ("gun", "leftPD")),
+        ((R, "right2"), ("gun", "rightPD")),
+        ((U, "top"), ("broadSide", "topBroadside")),
+        ((D, "bottom"), ("broadSide", "bottomBroadside")),
+        ((L, "top"), ("broadSide", "leftBroadside1")),
+        ((L, "bottom"), ("broadSide", "leftBroadside2")),
+        ((R, "top"), ("broadSide", "rightBroaside1")),
+        ((R, "bottom"), ("broadSide", "rightBroaside2"))
+    ]
+)
+

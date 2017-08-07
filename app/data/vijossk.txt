@@ -1,0 +1,19 @@
+(
+    Ship
+    {
+        id = -1,
+        name = "Vijossk",
+        classType = "Freighter",
+        classAbb = "FT",
+        color = Color 0 0 1 1,
+        factionId = 2,
+        pos = V2 600 100
+    },
+    [
+        ((U, "ship"), ("base", "ship")),
+        ((U, "ship"), ("base", "top")),
+        ((D, "ship"), ("base", "bottom")),
+        ((D, "bottom"), ("gun", "pointGun"))
+    ]
+)
+

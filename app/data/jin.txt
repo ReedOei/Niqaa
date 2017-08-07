@@ -1,0 +1,18 @@
+(
+    Ship
+    {
+        id = -1,
+        name = "Jin",
+        classType = "Fighter",
+        classAbb = "FTR",
+        color = Color 0.5 0.5 0 1,
+        factionId = 7,
+        pos = V2 0 0
+    },
+    [
+        ((U, "ship"), ("base", "ship")),
+        ((R, "ship"), ("megaLaser", "megaLaser")),
+        ((L, "ship"), ("megaLaser", "megaLaser2"))
+    ]
+)
+

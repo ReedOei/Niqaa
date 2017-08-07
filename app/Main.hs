@@ -60,9 +60,10 @@ initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) Init
              }
 
 update :: Model -> Action -> (Model, Cmd SDLEngine Action)
-update model (InitRandom gen) = (model {gen = gen}, Cmd.execute loadPatterns LoadPatterns)
-update model ReloadPatterns = (model, Cmd.execute loadPatterns LoadPatterns)
-update model@Model{shipPatterns} (LoadPatterns patterns) = (model {shipPatterns = patterns}, Cmd.none)
+update model (InitRandom gen) = update (model {gen = gen}) $ LoadPatterns "apps/data.txt" 
+update model ReloadPatterns = update model $ LoadPatterns "apps/data.txt"
+update model (LoadPatterns path) = (model, Cmd.execute (defaultLoadData path) LoadedPatterns)
+update model (LoadedPatterns patterns) = (model {shipPatterns = patterns}, Cmd.none)
 
 -- Change the current ship when we right click
 update model@(Model {..}) (RClick pos) =
@@ -120,3 +121,4 @@ main = do
         subscriptionsFn = subscriptions,
         viewFn = view
      }
+

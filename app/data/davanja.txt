@@ -1,0 +1,17 @@
+(
+    Ship
+    {
+        id = -1,
+        name = "Davanja",
+        classType = "Artillery",
+        classAbb = "ART",
+        color = Color 0 1 1 1,
+        factionId = 5,
+        pos = V2 1550 700
+    },
+    [
+        ((U, "ship"), ("base", "ship")),
+        ((U, "ship"), ("howitzer", "howitzer"))
+    ]
+)
+

@@ -1,0 +1,38 @@
+(
+    Ship
+    {
+        id = -1,
+        name = "Blaqiiiiip",
+        classType = "Destroyer",
+        classAbb = "DD",
+        color = Color 1 1 0.4 1,
+        factionId = 9,
+        pos = V2 0 0
+    },
+    [
+        ((U, "ship"), ("base", "ship")),
+
+        ((R, "ship"), ("mediBase", "mediBaseR1")),
+        ((R, "mediBaseR1"), ("mediBase", "mediBaseR2")),
+        ((R, "mediBaseR2"), ("mediBase", "mediBaseR3")),
+        ((R, "mediBaseR3"), ("mediBase", "mediBaseR4")),
+        ((R, "mediBaseR4"), ("mediBase", "mediBaseR5")),
+        ((R, "mediBaseR5"), ("mediBase", "mediBaseR6")),
+        ((U, "mediBaseR6"), ("mediBase", "mediBaseRU")),
+        ((U, "mediBaseRU"), ("machineGun", "machineGunR1")),
+        ((D, "mediBaseR6"), ("mediBase", "mediBaseRD")),
+        ((D, "mediBaseRD"), ("machineGun", "machineGunR2")),
+
+        ((L, "ship"), ("mediBase", "mediBaseL1")),
+        ((L, "mediBaseL1"), ("mediBase", "mediBaseL2")),
+        ((L, "mediBaseL2"), ("mediBase", "mediBaseL3")),
+        ((L, "mediBaseL3"), ("mediBase", "mediBaseL4")),
+        ((L, "mediBaseL4"), ("mediBase", "mediBaseL5")),
+        ((L, "mediBaseL5"), ("mediBase", "mediBaseL6")),
+        ((U, "mediBaseL6"), ("mediBase", "mediBaseLU")),
+        ((U, "mediBaseLU"), ("machineGun", "machineGunL1")),
+        ((D, "mediBaseL6"), ("mediBase", "mediBaseLD")),
+        ((D, "mediBaseLD"), ("machineGun", "machineGunL2"))
+    ]
+)
+

@@ -25,7 +25,8 @@ data Action = LClick (V2 Double) |
               None | 
               Step Double |
               InitRandom StdGen |
-              LoadPatterns [BuildPattern] |
+              LoadPatterns String |
+              LoadedPatterns [BuildPattern] |
               ReloadPatterns |
               AddRandomShip |
               AddRandomShipPos (V2 Double) |

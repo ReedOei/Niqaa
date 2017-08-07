@@ -1,0 +1,19 @@
+(
+    Ship
+    {
+        id = -1,
+        name = "Hija",
+        classType = "Interceptor",
+        classAbb = "INT",
+        color = Color 1 0 1 1,
+        factionId = 4,
+        pos = V2 100 500
+    },
+    [
+        ((U, "ship"), ("base", "ship")),
+        ((L, "ship"), ("gun", "leftGun")),
+        ((R, "ship"), ("gun", "rightGun")),
+        ((U, "ship"), ("gun", "topGun"))
+    ]
+)
+
