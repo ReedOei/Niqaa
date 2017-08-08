@@ -1,0 +1,26 @@
+Part
+{
+    id = -1,
+    name = "megaLaser",
+    shipId = -1,
+    pos = V2 0 0,
+    vel = V2 0 0,
+    health = 3,
+    color = Color 1 1 1 1,
+    size = 15,
+    factionId = -1,
+    stats = Gun
+    {
+        prec = 1,
+        timerGoal = 0.08,
+        timer = 0,
+        shotSize = 1,
+        shotDamage = 0.25,
+        shotSpeed = 30,
+        salvoSize = 1,
+        shotsLeft = 0,
+        salvoTimerGoal = 0,
+        salvoTimer = 0
+    }
+}
+

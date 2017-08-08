@@ -1,0 +1,26 @@
+Part
+{
+    id = -1,
+    name = "gatlingGun",
+    shipId = -1,
+    pos = V2 0 0,
+    vel = V2 0 0,
+    health = 30,
+    color = Color 1 1 1 1,
+    size = 8,
+    factionId = -1,
+    stats = Gun
+    {
+        prec = 6,
+        timerGoal = 0.15,
+        timer = 0,
+        shotSize = 2,
+        shotDamage = 1,
+        shotSpeed = 15,
+        salvoSize = 0,
+        shotsLeft = 0,
+        salvoTimerGoal = 0,
+        salvoTimer = 0
+    }
+}
+

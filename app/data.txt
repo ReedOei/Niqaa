@@ -1,5 +1,16 @@
 part:app/data/mass driver.txt
 part:app/data/shield.txt
+part:app/data/base.txt
+part:app/data/miniBase.txt
+part:app/data/mediBase.txt
+part:app/data/gun.txt
+part:app/data/gatlingGun.txt
+part:app/data/howitzer.txt
+part:app/data/bigBullet.txt
+part:app/data/machineGun.txt
+part:app/data/megaLaser.txt
+part:app/data/slingShot.txt
+part:app/data/broadSide.txt
 
 ship:app/data/pischki.txt
 ship:app/data/kiraara.txt

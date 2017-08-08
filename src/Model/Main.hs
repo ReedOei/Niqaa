@@ -39,6 +39,7 @@ data Model = Model { currentShip :: Int, -- The id of the current ship
                      worldSize :: V2 Double,
                      gen :: StdGen,
                      shipPatterns :: [BuildPattern],
+                     zoomAmount :: Double,
                      guiManager :: GUIManager}
     deriving Show
 

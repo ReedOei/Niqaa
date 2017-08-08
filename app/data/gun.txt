@@ -1,0 +1,26 @@
+Part
+{
+    id = -1,
+    name = "gun",
+    shipId = -1,
+    pos = V2 0 0,
+    vel = V2 0 0,
+    health = 5,
+    color = Color 1 1 1 1,
+    size = 2,
+    factionId = -1,
+    stats = Gun
+    {
+        prec = 4,
+        timerGoal = 3,
+        timer = 0,
+        shotSize = 3,
+        shotDamage = 3,
+        shotSpeed = 10,
+        salvoSize = 0,
+        shotsLeft = 0,
+        salvoTimerGoal = 0,
+        salvoTimer = 0
+    }
+}
+

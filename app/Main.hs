@@ -56,6 +56,7 @@ initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) Init
                 nParts = 1,
                 gen = mkStdGen 1,
                 shipPatterns = [],
+                zoomAmount = 1,
                 worldSize = V2 world_width world_height,
                 guiManager = buildMainGUI
              }

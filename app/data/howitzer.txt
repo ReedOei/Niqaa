@@ -1,0 +1,26 @@
+Part
+{
+    id = -1,
+    name = "howitzer",
+    shipId = -1,
+    pos = V2 0 0,
+    vel = V2 0 0,
+    health = 35,
+    color = Color 1 1 1 1,
+    size = 6,
+    factionId = -1,
+    stats = Gun
+    {
+        prec = 2,
+        timerGoal = 8,
+        timer = 0,
+        shotSize = 6,
+        shotDamage = 30,
+        shotSpeed = 25,
+        salvoSize = 0,
+        shotsLeft = 0,
+        salvoTimerGoal = 0,
+        salvoTimer = 0
+    }
+}
+

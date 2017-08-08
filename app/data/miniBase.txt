@@ -1,0 +1,14 @@
+Part
+{
+    id = -1,
+    name = "miniBase",
+    shipId = -1,
+    pos = V2 0 0,
+    vel = V2 0 0,
+    health = 15,
+    color = Color 1 1 1 1,
+    size = 2,
+    factionId = -1,
+    stats = Hull
+}
+

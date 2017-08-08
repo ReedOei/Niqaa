@@ -1,0 +1,26 @@
+Part
+{
+    id = -1,
+    name = "broadSide",
+    shipId = -1,
+    pos = V2 0 0,
+    vel = V2 0 0,
+    health = 20,
+    color = Color 1 1 1 1,
+    size = 8,
+    factionId = -1,
+    stats = Gun
+    {
+        prec = 5,
+        timerGoal = 10,
+        timer = 0,
+        shotSize = 4,
+        shotDamage = 6,
+        shotSpeed = 15,
+        salvoSize = 5,
+        shotsLeft = 0,
+        salvoTimerGoal = 100,
+        salvoTimer = 0
+    }
+}
+

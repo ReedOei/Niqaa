@@ -1,0 +1,26 @@
+Part
+{
+    id = -1,
+    name = "bigBullet",
+    shipId = -1,
+    pos = V2 0 0,
+    vel = V2 0 0,
+    health = 50,
+    color = Color 1 1 1 1,
+    size = 25,
+    factionId = -1,
+    stats = Gun
+    {
+        prec = 30,
+        timerGoal = 10,
+        timer = 0,
+        shotSize = 7,
+        shotDamage = 100,
+        shotSpeed = 10,
+        salvoSize = 1,
+        shotsLeft = 0,
+        salvoTimerGoal = 0,
+        salvoTimer = 0
+    }
+}
+
