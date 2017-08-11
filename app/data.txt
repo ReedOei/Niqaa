@@ -11,6 +11,7 @@ part:app/data/machineGun.txt
 part:app/data/megaLaser.txt
 part:app/data/slingShot.txt
 part:app/data/broadSide.txt
+part:app/data/superlarge.txt
 
 ship:app/data/pischki.txt
 ship:app/data/kiraara.txt
@@ -22,4 +23,4 @@ ship:app/data/jin.txt
 ship:app/data/tiktok.txt
 ship:app/data/blaqiiiiip.txt
 ship:app/data/utyra.txt
-
+--ship:app/data/largeblock.txt

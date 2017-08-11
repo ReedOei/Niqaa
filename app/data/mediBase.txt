@@ -9,5 +9,6 @@ Part
     color = Color 1 1 1 1,
     size = 4,
     factionId = -1,
+    clock = 0,
     stats = Hull
 }

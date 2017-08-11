@@ -17,10 +17,11 @@ data Part = Part { id :: Int,
                    color :: Color,
                    size :: Double,
                    factionId :: Int,
+                   clock :: Double,
                    stats :: Stats}
     deriving (Show, Read)
 
-data Stats = Hull | 
+data Stats = Hull |
              Gun {
                 prec :: Double,
                 timerGoal :: Double,
@@ -37,7 +38,7 @@ data Stats = Hull |
                 maxStrength :: Double,
                 strength :: Double,
                 rechargeRate :: Double, -- Recharges this much strength per second.
-                
+
                 shieldSize :: Double, -- The radius of the shield. The shield gets smaller as it's strength is decreased.
 
                 -- Shield flash makes the shield visually expand out from itself when hit.

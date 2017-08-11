@@ -41,7 +41,7 @@ loadData :: (Map.Map String Part.Part, [BuildPattern]) -> String -> IO (Map.Map 
 loadData inData path = do
     putStrLn $ "Loading data from: " ++ path
 
-    contents <- readFile "app/data.txt" >>= (return . filter (not . StrUtils.startswith "#") . lines)
+    contents <- readFile "app/data.txt" >>= (return . filter (not . StrUtils.startswith "--") . lines)
 
     let dataFiles = filter (StrUtils.startswith "data") contents
     let parts = filter (StrUtils.startswith "part") contents
@@ -50,13 +50,13 @@ loadData inData path = do
     putStrLn $ "Data files: " ++ show dataFiles
     putStrLn $ "Parts: " ++ show parts
     putStrLn $ "Ships: " ++ show ships
-    
+
     -- First load everything from the data files referenced here.
     (newPartDefs, patterns) <- foldM loadData inData dataFiles
-    
+
     -- Now load the stuff referenced in this file
     newParts <- mapM readFileContent $ map getAfterDelim parts
-    
+
     let loadedPartDefs = Map.union newPartDefs $ Map.fromList $ map makePartDef newParts
 
     newShips <- mapM readFileContent $ map getAfterDelim ships
@@ -70,4 +70,3 @@ loadData inData path = do
           getAfterDelim s = concat $ tail $ StrUtils.split ":" s
           getPartReferences partDefs ((dir, neighbor), (partName, newName)) =
             ((dir, neighbor), (fromJust $ Map.lookup partName partDefs, newName))
-    

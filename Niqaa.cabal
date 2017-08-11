@@ -21,10 +21,12 @@ library
                        Model.Ship,
                        Model.Shot,
                        Model.Action,
+                       Model.Physics,
                        Controller.Main,
                        Controller.Part,
                        Controller.Ship,
                        Controller.Shot,
+                       Controller.Physics,
                        Misc,
                        GUI.Main
   build-depends:       base >= 4.7 && < 5,
@@ -40,9 +42,9 @@ executable Niqaa
   main-is:             Main.hs
   other-modules:       Ships, GUI
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
-  build-depends:       base, 
-                       Niqaa, 
-                       helm, 
+  build-depends:       base,
+                       Niqaa,
+                       helm,
                        linear,
                        containers,
                        listsafe,

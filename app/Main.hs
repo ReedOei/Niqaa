@@ -57,12 +57,13 @@ initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) Init
                 gen = mkStdGen 1,
                 shipPatterns = [],
                 zoomAmount = 1,
+                clock = 0,
                 worldSize = V2 world_width world_height,
                 guiManager = buildMainGUI
              }
 
 update :: Model -> Action -> (Model, Cmd SDLEngine Action)
-update model (InitRandom gen) = update (model {gen = gen}) $ LoadPatterns "apps/data.txt" 
+update model (InitRandom gen) = update (model {gen = gen}) $ LoadPatterns "apps/data.txt"
 update model ReloadPatterns = update model $ LoadPatterns "apps/data.txt"
 update model (LoadPatterns path) = (model, Cmd.execute (defaultLoadData path) LoadedPatterns)
 update model (LoadedPatterns patterns) = (model {shipPatterns = patterns}, Cmd.none)
@@ -74,12 +75,12 @@ update model@(Model {..}) (RClick pos) =
         Nothing -> (model {currentShip = (-1)}, Cmd.none)
 
 -- Shoot a shot from our ship if we can at the place we clicked on
-update model@(Model {..}) (LClick pos) = 
+update model@(Model {..}) (LClick pos) =
     case handleClick guiManager Mouse.LeftButton pos of
         Just action -> update model action
         Nothing -> (model, Cmd.none)
 
-update model (Step milliseconds) = (doStep dt $ checkDestroyed $ handlePhysics dt model, Cmd.none)
+update model@Model{clock} (Step milliseconds) = (doStep dt $ checkDestroyed $ handlePhysics dt $ model {clock = clock + dt}, Cmd.none)
     where dt = milliseconds / 1000
 
 update model None = (model, Cmd.none)
@@ -109,11 +110,11 @@ view model@(Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) +
                                 Just part@Part.Part{Part.pos = V2 _ partY} ->
                                     move (V2 shipX (partY - Part.size part / 2 - 10)) $ text $ Text.height 12 $ Text.color color $ Text.toText $ Ship.name ship
                                 Nothing -> text $ Text.toText ""
-          showPart (Part.Part {..}) = 
+          showPart (Part.Part {..}) =
             case stats of
-                Part.Shield{..} -> 
-                    if strength > 1 then 
-                        group [move pos $ filled color $ square size, 
+                Part.Shield{..} ->
+                    if strength > 1 then
+                        group [move pos $ filled color $ square size,
                                move pos $ filled shieldColor $ circle (shieldSize * strength / maxStrength)]
                     else move pos $ filled color $ square size
                 _ -> move pos $ filled color $ square size
@@ -135,4 +136,3 @@ main = do
         subscriptionsFn = subscriptions,
         viewFn = view
      }
-

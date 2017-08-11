@@ -9,6 +9,7 @@ Part
     color = Color 1 1 1 1,
     size = 8,
     factionId = -1,
+    clock = 0,
     stats = Shield
     {
         maxStrength = 40,
@@ -21,4 +22,3 @@ Part
         shieldFlashCurrent = 0
     }
 }
-

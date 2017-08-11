@@ -9,6 +9,7 @@ Part
     color = Color 1 1 1 1,
     size = 8,
     factionId = -1,
+    clock = 0,
     stats = Gun
     {
         prec = 5,
@@ -23,4 +24,3 @@ Part
         salvoTimer = 0
     }
 }
-

@@ -1,0 +1,15 @@
+(
+    Ship
+    {
+        id = -1,
+        name = "Large Block",
+        classType = "Cruiser",
+        classAbb = "CA",
+        color = Color 1 0.5 0 1,
+        factionId = 6,
+        pos = V2 700 400
+    },
+    [
+        ((U, "ship"), ("superlarge", "ship"))
+    ]
+)

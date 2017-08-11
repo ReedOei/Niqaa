@@ -40,6 +40,7 @@ data Model = Model { currentShip :: Int, -- The id of the current ship
                      gen :: StdGen,
                      shipPatterns :: [BuildPattern],
                      zoomAmount :: Double,
+                     clock :: Double,
                      guiManager :: GUIManager}
     deriving Show
 

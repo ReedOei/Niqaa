@@ -28,7 +28,7 @@ import System.IO.Unsafe
 
 instance Physics Ship.Ship where
     getId = Ship.id
-    getBounds (Ship.Ship {Ship.pos = V2 x y}) = Rect x y 0 0
+    getBounds (Ship.Ship {Ship.pos = V2 x y}) = Rect x y 0 0 0
 
     doMove dt = id -- We do the actual moving in handleMove
 
@@ -53,4 +53,3 @@ getCurrent (Model {..}) = Map.lookup currentShip ships
 
 findAt :: V2 Double -> Map.Map k Ship.Ship -> Maybe Int
 findAt pos ships = getId <$> (find ((pos `inRect`) . getBounds) $ map snd $ Map.toList ships)
-

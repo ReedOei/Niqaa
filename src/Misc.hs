@@ -13,7 +13,7 @@ import System.Random
 
 import Model.Action
 
-clamp v low high 
+clamp v low high
     | v > high = high
     | v < low = high
     | otherwise = v
@@ -43,5 +43,5 @@ randomRn range initGen count = randomRn [] initGen 0
 
 -- x and y are the position of the center
 inRect :: V2 Double -> Shape -> Bool
-inRect (V2 x1 y1) (Rect x2 y2 w h) = x1 `inRange` (x2 - w, x2 + w) && y1 `inRange` (y2 - h, y2 + h)
+inRect (V2 x1 y1) (Rect x2 y2 w h _) = x1 `inRange` (x2 - w, x2 + w) && y1 `inRange` (y2 - h, y2 + h)
     where inRange v (l, h) = v >= l && v <= h

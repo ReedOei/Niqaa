@@ -4,7 +4,6 @@
 module Controller.Part
     (
         Direction (..),
-        makeGun,
         add, place,
         canShoot, resetGun,
         getFarthest,
@@ -33,21 +32,6 @@ import Misc
 
 import System.Random
 import System.IO.Unsafe
-
-makeGun :: Double -> Double -> Part.Stats -> Part.Part
-makeGun health size stats = Part.Part
-    {
-        Part.id = -1,
-        Part.name = "",
-        Part.shipId = -1,
-        Part.pos = V2 0 0,
-        Part.vel = V2 0 0,
-        Part.health = health,
-        Part.color = rgb 1 1 1,
-        Part.size = size,
-        Part.factionId = -1,
-        Part.stats = stats
-    }
 
 canShoot part@Part.Part{stats = Part.Gun{..}} = timer >= timerGoal && salvoTimer >= salvoTimerGoal
 canShoot _ = False
@@ -101,10 +85,10 @@ place L part model neighbor@Part.Part{Part.pos} = add (pos + V2 (-Part.size part
 instance Physics Part.Part where
     getId = Part.id
 
-    getBounds Part.Part{Part.pos = V2 x y, Part.stats = Part.Shield {..}} = 
+    getBounds Part.Part{Part.pos = V2 x y, Part.stats = Part.Shield {..}} =
         Circle x y (shieldSize * strength / maxStrength)
 
-    getBounds (Part.Part {Part.pos = V2 x y, Part.size}) = Rect x y size size
+    getBounds (Part.Part {Part.pos = V2 x y, Part.size, Part.clock}) = Rect x y size size 0
 
     doMove dt part@Part.Part{Part.pos, Part.vel} = part {Part.pos = pos + vel * pure dt}
     handleMove dt model@(Model {..}) part =
@@ -126,25 +110,25 @@ instance Physics Part.Part where
               (rtime, newGen1) = randomR (0, 1) $ gen inModel
               (n, newGen2) = randomR (0, length enemies - 1) newGen1
               (pid, newGen) = randomR (0, length targetParts - 1) newGen2
-            
+
               -- This multiplier exists so that not all guns reload at exactly the same rate.
               multiplier = 1 / fromIntegral gameFPS
-              model = inModel {parts = updatePhysics inParts newSelf, gen = if null enemies then newGen1 else newGen}
+              model = inModel {parts = updatePhysics inParts $ newSelf {Part.clock = clock + dt}, gen = if null enemies then newGen1 else newGen}
               newSelf =
                 case stats of
                     Part.Hull -> self
 
                     gun@Part.Gun{..} ->
-                        if timer + dt > timerGoal && timer < timerGoal then 
+                        if timer + dt > timerGoal && timer < timerGoal then
                             self {Part.stats = gun {Part.timer = timer + dt, Part.shotsLeft = salvoSize, Part.salvoTimer = 0} }
                         else if timer + dt > timerGoal then -- Don't increase both the timer
                             self {Part.stats = gun {Part.salvoTimer = salvoTimer + dt + rtime * multiplier}}
-                        else 
+                        else
                             self {Part.stats = gun {Part.timer = timer + dt + rtime * multiplier, Part.salvoTimer = salvoTimer + dt + rtime * multiplier}}
 
-                    shield@Part.Shield{..} -> 
-                        let newShield = shield {Part.strength = min (strength + dt * rechargeRate) maxStrength} in 
-                        
+                    shield@Part.Shield{..} ->
+                        let newShield = shield {Part.strength = min (strength + dt * rechargeRate) maxStrength} in
+
                         if shieldFlashing then
                             if shieldFlashCurrent > shieldFlashSize then
                                 self {Part.stats = newShield {Part.shieldFlashCurrent = 0, Part.shieldFlashing = False}}
@@ -168,5 +152,3 @@ shoot model _ _ = model -- If not a gun, we obviously can't shoot anything.
 
 checkDestroyed :: Model -> Model
 checkDestroyed model@Model{..} = model { parts = Map.filter ((> 0) . Part.health) parts }
-
-
