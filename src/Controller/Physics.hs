@@ -21,7 +21,13 @@ collide (Circle x1 y1 r) (Rect x2 y2 w h _) =
     where closestX = clamp x1 (x2 - w / 2) (x2 + w / 2)
           closestY = clamp y1 (y2 - h / 2) (y2 + h / 2)
 
-collide r1@(Rect x1 y1 w1 h1 a1) r2@(Rect x2 y2 w2 h2 a2) = collidez
+collide r1@(Rect x1 y1 w1 h1 a1) r2@(Rect x2 y2 w2 h2 a2)
+    | a1 == 0 && a2 == 0 = 
+        x1 - w1 / 2 <= x2 + w2 / 2 &&
+        x1 + w1 / 2 >= x2 - w2 / 2 &&
+        y1 - h1 / 2 <= y2 + h2 / 2 &&
+        y1 + h1 / 2 >= y2 - h2 / 2
+    | otherwise = collidez
 
     where   -- Find corner's coords, treat as vector's
       -- UL: upper left, UR: upper right, BL: bottom left, BR: bottom right

@@ -25,6 +25,7 @@ import System.IO.Unsafe
 
 -- All of the types and actual game functions are defined in here/sub libraries.
 import Lib
+import Misc
 
 import Model.Main
 import qualified Model.Part as Part
@@ -58,6 +59,7 @@ initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) Init
                 shipPatterns = [],
                 zoomAmount = 1,
                 clock = 0,
+                lastTicks = [], -- Not 0 because then we'd divide by 0 on the first step and crash
                 worldSize = V2 world_width world_height,
                 guiManager = buildMainGUI
              }
@@ -80,8 +82,10 @@ update model@(Model {..}) (LClick pos) =
         Just action -> update model action
         Nothing -> (model, Cmd.none)
 
-update model@Model{clock} (Step milliseconds) = (doStep dt $ checkDestroyed $ handlePhysics dt $ model {clock = clock + dt}, Cmd.none)
+update inModel@Model{clock, lastTicks} (Step milliseconds) = (doStep dt $ checkDestroyed $ handlePhysics dt model, Cmd.none)
     where dt = milliseconds / 1000
+          model = inModel { clock = clock + dt, lastTicks = newLastTicks }
+            where newLastTicks = take 100 $ dt : lastTicks
 
 update model None = (model, Cmd.none)
 update model@Model{shipPatterns} AddRandomShip = update (model {gen = newGen}) (AddShip (V2 x y) (shipPatterns !! i))
@@ -102,7 +106,7 @@ subscriptions = Sub.batch [Mouse.clicks handleClick,
           handleClick _ _ = None
 
 view :: Model -> Graphics SDLEngine
-view model@(Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) ++ map showShot (Map.elems shots) ++ [showGUI guiManager])
+view model@(Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) ++ map showShot (Map.elems shots) ++ [showGUI guiManager] ++ [fps])
     where showShip ship@Ship.Ship{Ship.color, Ship.pos=V2 shipX _} =
                 group $ (map showPart $ Map.elems $ Part.getParts model ship) ++ [name]
                 -- we want it to be just slightly above the highest piece.
@@ -122,6 +126,10 @@ view model@(Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) +
             where (Color r g b a) = color
                   shieldColor = Color r g b (a / 3)
           showShot (Shot.Shot {..}) = move pos $ filled shotColor $ square size
+          fps =
+            case lastTicks of 
+            [] -> blank
+            _ -> move (V2 70 190) $ text $ Text.height 12 $ Text.color (rgb 1 0 0) $ Text.toText $ "FPS: " ++ show (roundPrec 1 $ 1 / average lastTicks)
 
 main :: IO ()
 main = do
@@ -136,3 +144,4 @@ main = do
         subscriptionsFn = subscriptions,
         viewFn = view
      }
+

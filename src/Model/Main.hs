@@ -41,6 +41,7 @@ data Model = Model { currentShip :: Int, -- The id of the current ship
                      shipPatterns :: [BuildPattern],
                      zoomAmount :: Double,
                      clock :: Double,
+                     lastTicks :: [Double],
                      guiManager :: GUIManager}
     deriving Show
 
@@ -49,4 +50,5 @@ data Faction = Faction { factionId :: Int,
     deriving Show
 
 gameFPS :: Int
-gameFPS = 60
+gameFPS = 100
+

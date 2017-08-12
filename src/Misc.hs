@@ -4,7 +4,8 @@ module Misc
         distance, angle, fromAngle,
         getX, getY, getPos,
         inRect,
-        clamp
+        clamp,
+        roundPrec
     ) where
 
 import Linear.V2 (V2(V2))
@@ -12,6 +13,8 @@ import Linear.V2 (V2(V2))
 import System.Random
 
 import Model.Action
+
+roundPrec digits v = (fromInteger $ round $ v * 10^digits) / (10^^digits)
 
 clamp v low high
     | v > high = high
