@@ -16,11 +16,12 @@ Part
         timerGoal = 20,
         timer = 0,
         shotSize = 6,
-        shotDamage = 100,
+        shotDamage = 80,
         shotSpeed = 20,
         salvoSize = 0,
         shotsLeft = 0,
         salvoTimerGoal = 0,
-        salvoTimer = 0
+        salvoTimer = 0,
+        shotStats = Pulse
     }
 }

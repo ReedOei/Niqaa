@@ -8,6 +8,8 @@ import Linear.V2 (V2(V2))
 
 import Helm.Color
 
+import qualified Model.Shot as Shot
+
 data Part = Part { id :: Int,
                    name :: String,
                    shipId :: Int,
@@ -32,7 +34,8 @@ data Stats = Hull |
                 salvoSize :: Int,
                 shotsLeft :: Int,
                 salvoTimerGoal :: Double,
-                salvoTimer :: Double
+                salvoTimer :: Double,
+                shotStats :: Shot.Stats
              } |
              Shield {
                 maxStrength :: Double,
@@ -42,6 +45,7 @@ data Stats = Hull |
                 shieldSize :: Double, -- The radius of the shield. The shield gets smaller as it's strength is decreased.
 
                 -- Shield flash makes the shield visually expand out from itself when hit.
+                -- This is currently not used.
                 shieldFlashing :: Bool,
                 shieldFlashSize :: Double,
                 shieldFlashSpeed :: Double, -- How much it expands per second

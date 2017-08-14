@@ -48,3 +48,4 @@ randomRn range initGen count = randomRn [] initGen 0
 inRect :: V2 Double -> Shape -> Bool
 inRect (V2 x1 y1) (Rect x2 y2 w h _) = x1 `inRange` (x2 - w, x2 + w) && y1 `inRange` (y2 - h, y2 + h)
     where inRange v (l, h) = v >= l && v <= h
+

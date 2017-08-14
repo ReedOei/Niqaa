@@ -69,3 +69,4 @@ class Physics o where
 
 updatePhysics :: Physics a => Map.Map Int a -> a -> Map.Map Int a
 updatePhysics m self = Map.insert (getId self) self m
+

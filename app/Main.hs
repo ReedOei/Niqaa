@@ -52,6 +52,7 @@ initial = (model, Cmd.execute (getStdRandom random >>= (return . mkStdGen)) Init
                 ships = Map.empty,
                 parts = Map.empty,
                 shots = Map.empty,
+                explosions = [],
                 nShips = 1,
                 nShots = 1,
                 nParts = 1,
@@ -106,7 +107,16 @@ subscriptions = Sub.batch [Mouse.clicks handleClick,
           handleClick _ _ = None
 
 view :: Model -> Graphics SDLEngine
-view model@(Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) ++ map showShot (Map.elems shots) ++ [showGUI guiManager] ++ [fps])
+view model@(Model {..}) =
+    Graphics2D $ collage 
+    (
+        map showShip (Map.elems ships) ++ 
+        map showShot (Map.elems shots) ++ 
+        [showGUI guiManager] ++ 
+        [fps] ++
+        map showExplosion explosions
+    )
+
     where showShip ship@Ship.Ship{Ship.color, Ship.pos=V2 shipX _} =
                 group $ (map showPart $ Map.elems $ Part.getParts model ship) ++ [name]
                 -- we want it to be just slightly above the highest piece.
@@ -114,6 +124,7 @@ view model@(Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) +
                                 Just part@Part.Part{Part.pos = V2 _ partY} ->
                                     move (V2 shipX (partY - Part.size part / 2 - 10)) $ text $ Text.height 12 $ Text.color color $ Text.toText $ Ship.name ship
                                 Nothing -> text $ Text.toText ""
+                                
           showPart (Part.Part {..}) =
             case stats of
                 Part.Shield{..} ->
@@ -125,7 +136,11 @@ view model@(Model {..}) = Graphics2D $ collage (map showShip (Map.elems ships) +
 
             where (Color r g b a) = color
                   shieldColor = Color r g b (a / 3)
+
           showShot (Shot.Shot {..}) = move pos $ filled shotColor $ square size
+
+          showExplosion explosion@Explosion{..} = move explosionPos $ filled explosionColor $ circle currentSize
+
           fps =
             case lastTicks of 
             [] -> blank

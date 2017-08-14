@@ -86,15 +86,15 @@ collide r1@(Rect x1 y1 w1 h1 a1) r2@(Rect x2 y2 w2 h2 a2)
 
       -- f1 = map scal_proj r1_corners
       f1 = map dot_prod r1_corners
-      projList1 = map (\j -> map (\i -> (f1 !! i) (normals !! j)) [0..3])  [0..3]
+      projList1 = map (\normal -> map ($ normal) f1) normals
 
       -- f2 = map scal_proj r2_corners
       f2 = map dot_prod r2_corners
-      projList2 = map (\j -> map (\i -> (f2 !! i) (normals !! j)) [0..3])  [0..3]
+      projList2 = map (\normal -> map ($ normal) f2) normals
 
 
       -- Check if "projections" overlap
-      collidez = and $ map (\i -> overlap (projList1 !! i) (projList2 !! i)) [0..3]
+      collidez = and $ zipWith overlap projList1 projList2 
 
 
 -- Scalar projection of a onto b
@@ -110,14 +110,15 @@ magnitude (V2D (q, r)) = sqrt(q^2 + r^2)
 overlap :: [Float] -> [Float] -> Bool
 overlap r1_scal_vecs r2_scal_vecs = overlap'
     where
-        minr1 = minimum (r1_scal_vecs)
-        maxr1 = maximum (r1_scal_vecs)
+        minr1 = minimum r1_scal_vecs
+        maxr1 = maximum r1_scal_vecs
 
-        minr2 = minimum (r2_scal_vecs)
-        maxr2 = maximum (r2_scal_vecs)
+        minr2 = minimum r2_scal_vecs
+        maxr2 = maximum r2_scal_vecs
 
         overlap' = (minr1 <= minr2 && maxr1 >= minr2) || (minr2 <= minr1 && maxr2 >= minr1)
 
         -- or $ [and [minr1 <= minr2, maxr1 >= minr2], and [minr2 <= minr1, maxr2 >= minr1]]
 
 rtf = realToFrac
+

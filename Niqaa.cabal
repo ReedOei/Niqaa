@@ -64,3 +64,4 @@ test-suite Niqaa-test
 source-repository head
   type:     git
   location: https://github.com/Kytuzian/Niqaa
+

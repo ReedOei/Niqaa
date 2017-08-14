@@ -139,16 +139,28 @@ instance Physics Part.Part where
 
 -- Shoots a shot from the specified ship at the specified position.
 shoot :: Model -> Part.Part -> V2 Double -> Model
-shoot model@(Model {..}) self@Part.Part{Part.stats=Part.Gun{..}, Part.color} targetPos
+shoot model@(Model {..}) self@Part.Part{Part.stats=stats@Part.Gun{..}, Part.color} targetPos
     | canShoot self = model {shots = Map.insert nShots newShot shots, nShots = nShots + 1,
                              parts = updatePhysics parts $ resetGun self,
                              gen = newGen}
     | otherwise = model
     where (miss, newGen) = randomR (-1, 1) gen
-          newShot = Shot.Shot nShots (Part.pos self) vel shotSize shotDamage color (Part.factionId self) (Part.shipId self)
+          newShot = Shot.Shot 
+                    { 
+                        Shot.id = nShots,
+                        Shot.pos = Part.pos self,
+                        Shot.vel = if Part.shotStats stats == Shot.Pulse then vel else 0,
+                        Shot.size = shotSize,
+                        Shot.shotDamage = shotDamage,
+                        Shot.shotColor = color,
+                        Shot.stats = Part.shotStats stats,
+                        Shot.factionId = Part.factionId self,
+                        Shot.launchId = Part.shipId self
+                    }
             where vel = (fromAngle $ angle perfect + miss * prec) * pure shotSpeed
                     where perfect = normalize (targetPos - Part.pos self)
 shoot model _ _ = model -- If not a gun, we obviously can't shoot anything.
 
 checkDestroyed :: Model -> Model
 checkDestroyed model@Model{..} = model { parts = Map.filter ((> 0) . Part.health) parts }
+

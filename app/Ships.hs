@@ -70,3 +70,4 @@ loadData inData path = do
           getAfterDelim s = concat $ tail $ StrUtils.split ":" s
           getPartReferences partDefs ((dir, neighbor), (partName, newName)) =
             ((dir, neighbor), (fromJust $ Map.lookup partName partDefs, newName))
+

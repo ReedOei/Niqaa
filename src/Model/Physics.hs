@@ -12,3 +12,4 @@ type Radius = Double
 
 data Shape = Rect XCenter YCenter Width Height Angle |
              Circle XCenter YCenter Radius
+

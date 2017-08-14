@@ -24,6 +24,17 @@ import Misc
 import System.IO.Unsafe
 import System.Random
 
+addExplosion :: Shot.Shot -> Model -> V2 Double -> Model
+addExplosion shot@Shot.Shot{Shot.shotColor} model@Model{explosions} pos = model {explosions = newExplosion : explosions }
+    where newExplosion = Explosion
+                         {
+                            explosionPos = pos,
+                            maxSize = 10,
+                            explosionColor = shotColor,
+                            currentSize = 0,
+                            expanding = True
+                         }
+
 damage self@Shot.Shot{Shot.shotDamage} shield@(Part.Part {Part.health, Part.stats = stats@Part.Shield{..}})
     | strength > shotDamage = (newSelf, shield {Part.stats = stats {Part.strength = strength - shotDamage, Part.shieldFlashing = True, Part.shieldFlashCurrent = 0}})
     | otherwise = (newSelf,
@@ -52,14 +63,39 @@ instance Physics Shot.Shot where
             collisions ->
                 case find (\part -> Part.factionId part /= factionId) collisions of
                     Just part -> let (newSelf, newPart) = damage shot part in
-                        model {shots = Map.insert (Shot.id shot) newSelf shots,
-                               parts = Map.insert (getId newPart) newPart parts}
+                        let newModel =  
+                                model {shots = Map.insert (Shot.id shot) newSelf shots,
+                                       parts = Map.insert (getId newPart) newPart parts}
+                        in
+                            case stats of
+                                Shot.Missile{..} -> addExplosion shot newModel pos
+                                _ -> newModel
                     Nothing -> model
 
     -- Delete ourselves if we're out of bounds
-    handleStep dt model@Model{worldSize = V2 w h, shots} self@Shot.Shot{Shot.id, Shot.pos = V2 x y}
+    handleStep dt model@Model{worldSize = V2 w h, shots, parts, gen} self@Shot.Shot{..}
         | x < 0 || y < 0 || x >= w || y >= h = model {shots = Map.delete id shots}
-        | otherwise = model
+        | otherwise = 
+            case Shot.stats self of
+                -- If we're a missile, try to find a target and re-aim ourselves towards it.
+                stats@Shot.Missile{..} ->
+                    if missileFuel <= 0 then 
+                        model
+                    else 
+                        case find (\part -> Part.factionId part /= factionId) $ Map.elems parts of
+                            Nothing -> model
+                            Just target@Part.Part{Part.pos = targetPos} -> 
+                                let (newSelf, newGen) = getMissileMovement stats targetPos in
+                                    model {gen = newGen, 
+                                           shots = updatePhysics shots newSelf}
+                _ -> model
+        where (V2 x y) = pos
+              getMissileMovement stats@Shot.Missile{..} targetPos = (newSelf, newGen)
+                  where newSelf = self {Shot.stats = stats {Shot.missileFuel = missileFuel - dt}, Shot.vel = newVel}
+                        (miss, newGen) = randomR (-1, 1) gen
+                        newVel = vel + pure missileAcceleration * (fromAngle $ angle perfect + miss)
+                            where perfect = normalize (targetPos - pos)
 
 checkDestroyed :: Model -> Model
 checkDestroyed model@Model{..} = model { shots = Map.filter ((> 0) . Shot.shotDamage) shots }
+

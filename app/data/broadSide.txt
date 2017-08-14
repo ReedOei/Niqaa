@@ -21,6 +21,7 @@ Part
         salvoSize = 5,
         shotsLeft = 0,
         salvoTimerGoal = 100,
-        salvoTimer = 0
+        salvoTimer = 0,
+        shotStats = Pulse
     }
 }
