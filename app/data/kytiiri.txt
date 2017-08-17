@@ -1,0 +1,23 @@
+(
+    Ship
+    {
+        id = -1,
+        name = "Kytiiri",
+        classType = "Destroyer",
+        classAbb = "DD",
+        color = Color 1 0 0 1,
+        factionId = 1,
+        pos = V2 0 0 
+    },
+    [
+        ((U, "ship"), ("base", "ship")),
+        ((U, "ship"), ("base", "top")),
+        ((D, "ship"), ("base", "lower")),
+        ((D, "lower"), ("base", "bottom")),
+        ((U, "top"), ("missile", "gatlingGun")),
+        ((D, "bottom"), ("gun", "tailGun")),
+        ((L, "ship"), ("gun", "leftGun")),
+        ((R, "ship"), ("gun", "rightGun"))
+    ]
+)
+
