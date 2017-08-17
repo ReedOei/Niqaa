@@ -15,7 +15,7 @@ Part
         prec = 25,
         timerGoal = 3,
         timer = 0,
-        shotSize = 1,
+        shotSize = V2 1 1,
         shotDamage = 0.5,
         shotSpeed = 5,
         salvoSize = 1,

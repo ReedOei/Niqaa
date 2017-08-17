@@ -28,7 +28,7 @@ data Stats = Hull |
                 prec :: Double,
                 timerGoal :: Double,
                 timer :: Double,
-                shotSize :: Double,
+                shotSize :: V2 Double,
                 shotDamage :: Double,
                 shotSpeed :: Double,
                 salvoSize :: Int,

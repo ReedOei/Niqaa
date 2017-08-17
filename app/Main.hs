@@ -137,7 +137,8 @@ view model@(Model {..}) =
             where (Color r g b a) = color
                   shieldColor = Color r g b (a / 3)
 
-          showShot (Shot.Shot {..}) = move pos $ filled shotColor $ square size
+          showShot (Shot.Shot {..}) = rotate (a * pi / 180) $ move pos $ filled shotColor $ rect size
+            where a = angle vel
 
           showExplosion explosion@Explosion{..} = move explosionPos $ filled explosionColor $ circle currentSize
 

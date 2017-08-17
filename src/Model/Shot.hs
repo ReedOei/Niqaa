@@ -11,7 +11,7 @@ import Helm.Color
 data Shot = Shot { id :: Int,
                    pos :: V2 Double,
                    vel :: V2 Double,
-                   size :: Double,
+                   size :: V2 Double,
                    shotDamage :: Double,
                    shotColor :: Color,
                    stats :: Stats,

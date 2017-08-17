@@ -51,7 +51,8 @@ damage self@Shot.Shot{Shot.shotDamage} part@(Part.Part {..}) =
 
 instance Physics Shot.Shot where
     getId = Shot.id
-    getBounds (Shot.Shot {Shot.pos = V2 x y, Shot.size}) = Rect x y size size 0
+    getBounds (Shot.Shot {Shot.pos = V2 x y, Shot.size = V2 w h, Shot.vel}) = Rect x y w h (a * pi / 180)
+        where a = angle vel
 
     doMove dt shot@(Shot.Shot {..}) = shot {Shot.pos = pos + vel * pure dt}
     handleMove dt model@(Model {..}) shot@(Shot.Shot {Shot.id}) =
