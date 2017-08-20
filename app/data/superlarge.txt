@@ -7,7 +7,7 @@ Part
     vel = V2 0 0,
     health = 50,
     color = Color 1 1 1 1,
-    size = 100,
+    size = V2 100 150,
     factionId = -1,
     clock = 0,
     stats = Hull

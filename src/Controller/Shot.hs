@@ -51,7 +51,10 @@ damage self@Shot.Shot{Shot.shotDamage} part@(Part.Part {..}) =
 
 instance Physics Shot.Shot where
     getId = Shot.id
-    getBounds (Shot.Shot {Shot.pos = V2 x y, Shot.size = V2 w h, Shot.vel}) = Rect x y w h (a * pi / 180)
+    getBounds (Shot.Shot {Shot.pos = V2 x y, Shot.size = V2 w h, Shot.vel, Shot.stats}) = 
+        case stats of
+            Shot.Missile{..} -> Rect x y w h (a * pi / 180)
+            _ -> Rect x y w h 0
         where a = angle vel
 
     doMove dt shot@(Shot.Shot {..}) = shot {Shot.pos = pos + vel * pure dt}

@@ -5,6 +5,7 @@ module GUI.Main
     (
         GUIManager (..),
         GUIElement (..),
+        GUISpec (..),
         handleClick,
         showGUI
     ) where
@@ -26,28 +27,34 @@ import Misc
 
 import Model.Action
 
-data GUIManager = GUIManager { guiElements :: Map.Map String GUIElement }
+data GUIManager = GUIManager { guiElements :: Map.Map String GUIElement,
+                               focus :: Maybe String -- The element which is currently in focus. 
+                               }
     deriving Show
 
-data GUIElement = Button { buttonId :: String,
-                           buttonText :: String,
-                           buttonPos :: V2 Double,
-                           buttonSize :: V2 Double,
-                           buttonColor :: Color,
-                           textHeight :: Double,
-                           textColor :: Color,
-                           buttonAction :: V2 Double -> Action }
+data GUIElement = GUIElement { guiId :: String,
+                               text :: String,
+                               pos :: V2 Double,
+                               size :: V2 Double,
+                               color :: Color,
+                               backgroundColor :: Color,
+                               textHeight :: Double,
+                               specs :: GUISpec }
+                               
+data GUISpec = Button { buttonAction :: V2 Double -> Action } |
+               Label |
+               Entry
 
 instance Show GUIElement where
-    show Button{..} = buttonText
+    show GUIElement{..} = text
 
 showGUI :: GUIManager -> Form e
 showGUI guiManager@GUIManager{..} = group $ map showGUIElement $ Map.elems guiElements
 
 showGUIElement :: GUIElement -> Form e
-showGUIElement Button{..} =
-    group $ [move buttonPos $ filled buttonColor $ rect buttonSize,
-             move buttonPos $ text $ Text.typeface "Callibri" $ Text.height textHeight $ Text.color textColor $ Text.toText buttonText]
+showGUIElement GUIElement{..} =
+    group $ [move pos $ filled backgroundColor $ rect size,
+             move pos $ Helm.Graphics2D.text $ Text.typeface "Callibri" $ Text.height textHeight $ Text.color color $ Text.toText text]
 
 handleClick :: GUIManager -> Mouse.MouseButton -> V2 Double -> Maybe Action
 handleClick manager@GUIManager{guiElements} button pos =
@@ -56,11 +63,14 @@ handleClick manager@GUIManager{guiElements} button pos =
         _ -> Nothing
 
 handleGUIClick :: Mouse.MouseButton -> V2 Double -> GUIElement -> Maybe Action
-handleGUIClick button pos self@Button{buttonPos = V2 sx sy, buttonSize=V2 w h, buttonAction}
-    | pos `inRect` bounds = Just $ buttonAction pos
+handleGUIClick button pos self@GUIElement{pos = V2 sx sy, size=V2 w h, specs}
+    | pos `inRect` bounds = 
+        case specs of
+            Button{..} -> Just $ buttonAction pos
+            _ -> Nothing
     | otherwise = Nothing
     where bounds = Rect sx sy w h 0
 
+setId v self@GUIElement{..} = self { guiId = v}
+getId self@GUIElement{..} = guiId
 
-setGUIId v self@Button{..} = self { buttonId = v}
-getGUIId self@Button{..} = buttonId

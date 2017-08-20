@@ -37,7 +37,7 @@ import qualified Controller.Part as Part
 import qualified Controller.Ship as Ship
 import qualified Controller.Shot as Shot
 
-import GUI.Main
+import qualified GUI.Main as GUI
 
 import Ships -- Contains ships definitions
 import GUI -- Contains GUI definitions
@@ -79,7 +79,7 @@ update model@(Model {..}) (RClick pos) =
 
 -- Shoot a shot from our ship if we can at the place we clicked on
 update model@(Model {..}) (LClick pos) =
-    case handleClick guiManager Mouse.LeftButton pos of
+    case GUI.handleClick guiManager Mouse.LeftButton pos of
         Just action -> update model action
         Nothing -> (model, Cmd.none)
 
@@ -112,7 +112,7 @@ view model@(Model {..}) =
     (
         map showShip (Map.elems ships) ++ 
         map showShot (Map.elems shots) ++ 
-        [showGUI guiManager] ++ 
+        [GUI.showGUI guiManager] ++ 
         [fps] ++
         map showExplosion explosions
     )
@@ -122,17 +122,17 @@ view model@(Model {..}) =
                 -- we want it to be just slightly above the highest piece.
                 where name = case Part.getFarthest U model ship of
                                 Just part@Part.Part{Part.pos = V2 _ partY} ->
-                                    move (V2 shipX (partY - Part.size part / 2 - 10)) $ text $ Text.height 12 $ Text.color color $ Text.toText $ Ship.name ship
+                                    move (V2 shipX (partY - getY (Part.size part) / 2 - 10)) $ text $ Text.height 12 $ Text.color color $ Text.toText $ Ship.name ship
                                 Nothing -> text $ Text.toText ""
                                 
           showPart (Part.Part {..}) =
             case stats of
                 Part.Shield{..} ->
                     if strength > 1 then
-                        group [move pos $ filled color $ square size,
+                        group [move pos $ filled color $ rect size,
                                move pos $ filled shieldColor $ circle (shieldSize * strength / maxStrength)]
-                    else move pos $ filled color $ square size
-                _ -> move pos $ filled color $ square size
+                    else move pos $ filled color $ rect size
+                _ -> move pos $ filled color $ rect size
 
             where (Color r g b a) = color
                   shieldColor = Color r g b (a / 3)

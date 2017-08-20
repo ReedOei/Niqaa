@@ -7,7 +7,7 @@ Part
     vel = V2 0 0,
     health = 35,
     color = Color 1 1 1 1,
-    size = 20,
+    size = V2 20 20,
     factionId = -1,
     clock = 0,
     stats = Gun

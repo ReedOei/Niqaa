@@ -71,16 +71,16 @@ getParts :: Model -> Ship.Ship -> Map.Map Int Part.Part
 getParts model@Model{parts} ship = getPartsById model $ Ship.id ship
 
 getFarthest :: Direction -> Model -> Ship.Ship -> Maybe Part.Part
-getFarthest U model ship = Safe.minimumBy (comparing (\p -> getY (Part.pos p) - Part.size p / 2)) $ Map.elems $ getParts model ship
-getFarthest D model ship = Safe.maximumBy (comparing (\p -> getY (Part.pos p) + Part.size p / 2)) $ Map.elems $ getParts model ship
-getFarthest L model ship = Safe.minimumBy (comparing (\p -> getX (Part.pos p) - Part.size p / 2)) $ Map.elems $ getParts model ship
-getFarthest R model ship = Safe.maximumBy (comparing (\p -> getX (Part.pos p) + Part.size p / 2)) $ Map.elems $ getParts model ship
+getFarthest U model ship = Safe.minimumBy (comparing (\p -> getY (Part.pos p) - getY (Part.size p) / 2)) $ Map.elems $ getParts model ship
+getFarthest D model ship = Safe.maximumBy (comparing (\p -> getY (Part.pos p) + getY (Part.size p) / 2)) $ Map.elems $ getParts model ship
+getFarthest L model ship = Safe.minimumBy (comparing (\p -> getX (Part.pos p) - getX (Part.size p) / 2)) $ Map.elems $ getParts model ship
+getFarthest R model ship = Safe.maximumBy (comparing (\p -> getX (Part.pos p) + getX (Part.size p) / 2)) $ Map.elems $ getParts model ship
 
 place :: Direction -> Part.Part -> Model -> Part.Part -> Model
-place U part model neighbor@Part.Part{Part.pos} = add (pos + V2 0 (-Part.size part / 2 - Part.size neighbor / 2)) part neighbor model
-place D part model neighbor@Part.Part{Part.pos}  = add (pos + V2 0 (Part.size part / 2 + Part.size neighbor / 2)) part neighbor model
-place R part model neighbor@Part.Part{Part.pos} = add (pos + V2 (Part.size part / 2 + Part.size neighbor / 2) 0) part neighbor model
-place L part model neighbor@Part.Part{Part.pos} = add (pos + V2 (-Part.size part / 2 - Part.size neighbor / 2) 0) part neighbor model
+place U part model neighbor@Part.Part{Part.pos} = add (pos + V2 0 (-getY (Part.size part) / 2 - getY (Part.size neighbor) / 2)) part neighbor model
+place D part model neighbor@Part.Part{Part.pos}  = add (pos + V2 0 (getY (Part.size part) / 2 + getY (Part.size neighbor) / 2)) part neighbor model
+place R part model neighbor@Part.Part{Part.pos} = add (pos + V2 (getX (Part.size part / 2) + getX (Part.size neighbor) / 2) 0) part neighbor model
+place L part model neighbor@Part.Part{Part.pos} = add (pos + V2 (-getX (Part.size part) / 2 - getX (Part.size neighbor) / 2) 0) part neighbor model
 
 instance Physics Part.Part where
     getId = Part.id
@@ -88,7 +88,7 @@ instance Physics Part.Part where
     getBounds Part.Part{Part.pos = V2 x y, Part.stats = Part.Shield {..}} =
         Circle x y (shieldSize * strength / maxStrength)
 
-    getBounds (Part.Part {Part.pos = V2 x y, Part.size, Part.clock}) = Rect x y size size 0
+    getBounds (Part.Part {Part.pos = V2 x y, Part.size = V2 w h, Part.clock}) = Rect x y w h 0
 
     doMove dt part@Part.Part{Part.pos, Part.vel} = part {Part.pos = pos + vel * pure dt}
     handleMove dt model@(Model {..}) part =

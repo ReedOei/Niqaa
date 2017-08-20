@@ -7,7 +7,7 @@ Part
     vel = V2 0 0,
     health = 5,
     color = Color 1 1 1 1,
-    size = 8,
+    size = V2 8 8,
     factionId = -1,
     clock = 0,
     stats = Shield

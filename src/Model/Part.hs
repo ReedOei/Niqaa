@@ -17,7 +17,7 @@ data Part = Part { id :: Int,
                    vel :: V2 Double,
                    health :: Double,
                    color :: Color,
-                   size :: Double,
+                   size :: V2 Double,
                    factionId :: Int,
                    clock :: Double,
                    stats :: Stats}
@@ -52,3 +52,4 @@ data Stats = Hull |
                 shieldFlashCurrent :: Double
              }
     deriving (Show, Read)
+
