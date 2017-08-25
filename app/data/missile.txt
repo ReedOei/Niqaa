@@ -17,15 +17,15 @@ Part
         timer = 0,
         shotSize = V2 7 2,
         shotDamage = 30,
-        shotSpeed = 0,
+        shotSpeed = 60,
         salvoSize = 0,
         shotsLeft = 0,
         salvoTimerGoal = 0,
         salvoTimer = 0,
         shotStats = Missile
                     {
-                        missileFuel = 5,
-                        missileAcceleration = 0.25
+                        missileFuel = 200,
+                        missileAcceleration = 0.5
                     }
     }
 }

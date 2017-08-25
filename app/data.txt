@@ -15,14 +15,14 @@ part:app/data/superlarge.txt
 part:app/data/missile.txt
 
 ship:app/data/pischki.txt
-ship:app/data/kiraara.txt
-ship:app/data/vijossk.txt
-ship:app/data/videre.txt
-ship:app/data/hija.txt
-ship:app/data/davanja.txt
-ship:app/data/jin.txt
-ship:app/data/tiktok.txt
-ship:app/data/blaqiiiiip.txt
-ship:app/data/utyra.txt
+--ship:app/data/kiraara.txt
+--ship:app/data/vijossk.txt
+--ship:app/data/videre.txt
+--ship:app/data/hija.txt
+--ship:app/data/davanja.txt
+--ship:app/data/jin.txt
+--ship:app/data/tiktok.txt
+--ship:app/data/blaqiiiiip.txt
+--ship:app/data/utyra.txt
 ship:app/data/kytiiri.txt
 ship:app/data/largeblock.txt

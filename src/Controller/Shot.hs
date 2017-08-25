@@ -97,8 +97,11 @@ instance Physics Shot.Shot where
               getMissileMovement stats@Shot.Missile{..} targetPos = (newSelf, newGen)
                   where newSelf = self {Shot.stats = stats {Shot.missileFuel = missileFuel - dt}, Shot.vel = newVel}
                         (miss, newGen) = randomR (-1, 1) gen
-                        newVel = vel + pure missileAcceleration * (fromAngle $ angle perfect + miss)
+                        newVel
+                            | shotSpeed^2 < distanceSquared acc = vel
+                            | otherwise = acc 
                             where perfect = normalize (targetPos - pos)
+                                  acc = vel + pure missileAcceleration * (fromAngle $ angle perfect + miss)
 
 checkDestroyed :: Model -> Model
 checkDestroyed model@Model{..} = model { shots = Map.filter ((> 0) . Shot.shotDamage) shots }

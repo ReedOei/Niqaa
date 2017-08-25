@@ -1,7 +1,7 @@
 module Misc
     (
         randomRn,
-        distance, angle, fromAngle,
+        distance, distanceSquared, angle, fromAngle,
         getX, getY, getPos,
         inRect,
         clamp,
@@ -27,8 +27,11 @@ getPos (V2 x y) = (x, y)
 getX = fst . getPos
 getY = snd . getPos
 
+distanceSquared :: Floating a => V2 a -> a
+distanceSquared (V2 x y) = x^2 + y^2
+
 distance :: Floating a => V2 a -> a
-distance (V2 x y) = sqrt $ x^2 + y^2
+distance = sqrt . distanceSquared
 
 angle :: (RealFloat a, Floating a) => V2 a -> a
 angle (V2 x y) = atan2 y x * 180 / pi

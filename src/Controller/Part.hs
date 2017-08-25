@@ -150,6 +150,7 @@ shoot model@(Model {..}) self@Part.Part{Part.stats=stats@Part.Gun{..}, Part.colo
                         Shot.id = nShots,
                         Shot.pos = Part.pos self,
                         Shot.vel = if Part.shotStats stats == Shot.Pulse then vel else 0,
+                        Shot.shotSpeed = shotSpeed,
                         Shot.size = shotSize,
                         Shot.shotDamage = shotDamage,
                         Shot.shotColor = color,
